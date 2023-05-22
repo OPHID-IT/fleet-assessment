@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#66C1FF"
+    >
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="14sp"
+        android:layout_centerInParent="true"/>
+
+
+    <TextView
+        android:id="@+id/regNumTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:textSize="17dp"
+        android:text="Motorcycle Checklist"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:elevation="2dp"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+
+        />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textSize="16sp"
+        android:textColor="#5f5f5f"
+        android:textStyle="bold"
+        android:layout_centerInParent="true"
+        android:paddingLeft="5dp"
+        android:background="#66C1FF"
+
+        />
+
+    <ScrollView
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="@drawable/main_window_curved_top_background"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+
+            >
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A/1 Every morning -check for any damagnes on the motorcycle engine, components and accessories. Make sure to check:"
+                android:paddingLeft="5dp"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"/>
+
+
+
+           <ToggleButton
+                android:id="@+id/t2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Petrol level is enough for the trip"
+                android:textOn="Petrol level is enough for the trip"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector"
+
+                />
+
+
+            <ToggleButton
+                android:id="@+id/t3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Electricals on darsh board are funtional"
+                android:textOn="Electricals on darsh board are funtional"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector"
+            />
+
+
+            <ToggleButton
+                android:id="@+id/t4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Adjustements on clutch, brakes levers and drive chains are within range"
+                android:textOn="Adjustements on clutch, brakes levers and drive chains are within range"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector"
+                />
+
+            <ToggleButton
+                android:id="@+id/t5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Lubrication/oil level"
+                android:textOn="Lubrication/oil level"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Nuts and bolts are tight including number plate bolts and front fender"
+                android:textOn="Nuts and bolts are tight including number plate bolts and front fender"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+            <ToggleButton
+                android:id="@+id/t7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure the stop light and head light are functional"
+                android:textOn="Make sure the stop light and head light are functional"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Indicators are functional"
+                android:textOn="Indicators are functional"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="B/9 Daily checks:"
+                android:paddingLeft="5dp"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"
+                android:textStyle="bold"
+                />
+
+
+            <ToggleButton
+                android:id="@+id/t10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="All lights are functional including dashboard"
+                android:textOn="All lights are functional including dashboard"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure brakes are functional"
+                android:textOn="Make sure brakes are functional"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Nothing is loose, tighten where necessary"
+                android:textOn="Nothing is loose, tighten where necessaryt"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Fuel level, enough fuel for the trip"
+                android:textOn="Fuel level, enough fuel for the trip"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Report Fuel or oil leaks"
+                android:textOn="Report Fuel or oil leaks"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t15"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure tyres are well inflated and in good condition before take off "
+                android:textOn="Make sure tyres are well inflated and in good condition before take off "
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t16"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Horn is working"
+                android:textOn="Horn is working"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t17"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Remove keys at the end of day trip"
+                android:textOn="Remove keys at the end of day trip"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+
+
+            <ToggleButton
+                android:id="@+id/t18"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Fuel cork to be switched off after the end of day trip"
+                android:textOn="Fuel cork to be switched off after the end of day trip"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="C/19 Weekly checks:"
+                android:paddingLeft="5dp"
+                android:textSize="13sp"
+                android:textAllCaps="false"
+
+                android:textColor="@color/black"
+                android:layout_centerInParent="true"
+                android:textStyle="bold"
+                />
+
+            <ToggleButton
+                android:id="@+id/t20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Battery water level"
+                android:textOn="Battery water level"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t21"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure the Insurance is valid"
+                android:textOn="Make sure the Insurance is valid"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t22"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure the road license is valid"
+                android:textOn="Make sure the road license is valid"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+            <ToggleButton
+                android:id="@+id/t23"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="Make sure tyres are well inflated and in good condition before take off"
+                android:textOn="Make sure tyres are well inflated and in good condition before take off"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+
+
+
+
+            <ToggleButton
+                android:id="@+id/t24"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ToggleButton"
+                android:textOff="The vehicle insurance is valid"
+                android:textOn="The vehicle insurance is valid"
+
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:background="@drawable/selector" />
+
+            />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Submit"
+                android:layout_gravity="center_horizontal"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

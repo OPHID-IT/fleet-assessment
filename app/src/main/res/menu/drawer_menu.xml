@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    >
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_home"
+            android:icon="@drawable/ic_home"
+            android:title="Home"/>
+        <item android:id="@+id/nav_vehicle_checklist"
+            android:icon="@drawable/ic_vehicle_checklist"
+            android:title="Vehicle Checklist"/>
+        <item android:id="@+id/nav_motorcycle_checklist"
+            android:icon="@drawable/ic_motorcycle_checklist"
+            android:title="Motorcycle Checklist"/>
+        <item android:id="@+id/nav_bicycle_inspection"
+            android:icon="@drawable/ic_bicycle_inspection"
+            android:title="Bicycle Inspection"/>
+        <item android:id="@+id/nav_vehicle_inspection"
+            android:icon="@drawable/ic_vehicle_inspection"
+            android:title="Vehicle Inspection"/>
+        <item android:id="@+id/nav_motorcycle_inspection"
+            android:icon="@drawable/ic_motorcycle_inspection"
+            android:title="Motorcycle Inspection"/>
+        <item android:id="@+id/nav_about"
+            android:icon="@drawable/ic_about"
+            android:title="About"/>
+        <item android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Logout"/>
+    </group>
+</menu>
