@@ -88,6 +88,7 @@ public class VehicleChecklistFragment extends Fragment{
         t32 = (ToggleButton) root.findViewById(R.id.t32);
         t33 = (ToggleButton) root.findViewById(R.id.t33);
         t34 = (ToggleButton) root.findViewById(R.id.t34);
+
         saveButton=(Button) root.findViewById(R.id.saveButton);
         Globals.questionProgressCount=0;
         Globals.denominator=34;

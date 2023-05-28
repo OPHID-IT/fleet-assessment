@@ -519,6 +519,7 @@ android:textColor="@drawable/text_color_selector"/>
                     android:layout_weight="1"
                     android:hint="Current Mileage"
                     android:focusable="true"
+                    android:inputType="number"
                     />
             </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
@@ -528,27 +529,8 @@ android:textColor="@drawable/text_color_selector"/>
                 app:borderColor="#5300e8"
                 app:borderWidth="2dp"
                 app:cornerRadius="8dp"
-                android:padding="10dp">
-                <EditText
-                    android:id="@+id/next_service"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Next Service"
-                    android:focusable="true"
-                    />
-            </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
+                android:padding="10dp"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:paddingLeft="5dp"
-                android:textSize="20sp"
-                android:textAllCaps="false"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_centerInParent="true"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -566,23 +548,84 @@ android:textColor="@drawable/text_color_selector"/>
                 >
 
                 <RadioButton
+                    android:id="@+id/rbQuarter"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1/4"/>
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1/2"/>
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3/4"/>
-                <RadioButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Full"/>
-            </RadioGroup>
+                    android:text="1/4" />
 
+                <RadioButton
+                    android:id="@+id/rbHalf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1/2" />
+
+                <RadioButton
+                    android:id="@+id/rbThreeQuarters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3/4" />
+
+                <RadioButton
+                    android:id="@+id/rbFull"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Full" />
+            </RadioGroup>
+            <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:borderColor="#5300e8"
+                app:borderWidth="2dp"
+                app:cornerRadius="8dp"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/date_tyre_last_changed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Last tyre change date"
+                    android:focusable="false"
+                    />
+            </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
+
+            <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:borderColor="#5300e8"
+                app:borderWidth="2dp"
+                app:cornerRadius="8dp"
+                android:padding="16dp">
+
+                <EditText
+                    android:id="@+id/date_battery_last_changed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Last battery change date"
+                    android:focusable="false"
+                    />
+            </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
+
+            <ss.anoop.awesometextinputlayout.AwesomeTextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:borderColor="#5300e8"
+                app:borderWidth="2dp"
+                app:cornerRadius="8dp"
+                android:padding="0dp"
+                android:textSize="12sp"
+                >
+                <EditText
+                    android:id="@+id/mileage_at_last_tyre_change"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Mileage at last tyre change"
+                    android:focusable="true"
+                    android:inputType="number"
+                    />
+            </ss.anoop.awesometextinputlayout.AwesomeTextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"

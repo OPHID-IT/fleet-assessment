@@ -40,6 +40,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
 
     private static final String TABLE_VEHICLE_CHECKLIST = "create table VehicleChecklist(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,t27 text not null,t28 text not null,t29 text not null,t30 text not null,t31 text not null,t32 text not null,t33 text not null,t34 text not null);";
+    private static final String TABLE_VEHICLE_INSPECTION = "create table VehicleInspection(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,CurrentMileage text not null, Fuel text not null,DateTyreLastChanged text not null,MileageAtLastTyreChange text not null,DateBatteryLastChanged text not null,FrontImage BLOB, LeftImage BLOB, RightImage BLOB,BackImage BLOB);";
+
     private static final int DATABASE_VERSION = 1;
     private static final String user_tab="user_tab";
     private static final String user_password="user_password";
@@ -57,6 +59,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase sQLiteDatabase) {
         sQLiteDatabase.execSQL(TABLE_VEHICLE_CHECKLIST);
+        sQLiteDatabase.execSQL(TABLE_VEHICLE_INSPECTION);
+
 
         sQLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS user_credential_tab(" +
                 " user_id INTEGER primary key autoincrement , " +

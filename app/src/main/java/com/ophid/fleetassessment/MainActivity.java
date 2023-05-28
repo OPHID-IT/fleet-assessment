@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.CursorWindow;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -37,11 +39,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MySQLiteHelper dbHelper;
     private SQLiteDatabase db;
     public static Fragment vehicleChecklistfragment;
+    public static Fragment vehicleInspectionfragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try {
+            Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
+            field.setAccessible(true);
+            field.set(null, 100 * 1024 * 1024); //the 100MB is the new size
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -142,16 +153,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         noVehicleSelected();
 
                     }else {
-                        Fragment vehicleInspectionFragment = getSupportFragmentManager().findFragmentByTag("Vehicle_Inspection_tag");
-                        if (vehicleInspectionFragment == null) {
-                            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new VehicleInspectionFragment(), "Vehicle_Inspection_tag").addToBackStack("Vehicle_Inspection_tag").commit();
-                            Globals.focusedChecklist = "Vehicle Inspection";
+                        if (doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(Globals.vehicleRegNumber)) {
+                            vehicleInspectionAlreadyExistsAndIsNotSyncedPopupMessage();
                         } else {
-                            getSupportFragmentManager().popBackStackImmediate("Vehicle_Inspection_tag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                            transaction.replace(R.id.fragment_container, vehicleInspectionFragment, "Vehicle_Inspection_tag");
-                            transaction.commit();
-                            Globals.focusedChecklist = "Vehicle Inspection";
+
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new VehicleInspectionFragment()).commit();
                         }
                     }
                     break;
@@ -232,6 +238,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return Globals.vehicleChecklistTableHasData;
     }
 
+    public boolean doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(String regNumber)
+    {
+        Globals.vehicleInspectionTableHasData=false;
+        //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
+        Cursor cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from VehicleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+
+        if (cursor!=null && cursor.getCount()>0)
+        {
+            Globals.vehicleInspectionTableHasData = true;
+        }
+        else if (cursor==null || cursor.getCount()==0) {
+            Globals.vehicleInspectionTableHasData = false;
+        }
+
+        return Globals.vehicleInspectionTableHasData;
+    }
 
     public void vehicleAlreadyExistsAndIsNotSyncedPopupMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -264,6 +286,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.create().show();
     }
 
+
+    public void vehicleInspectionAlreadyExistsAndIsNotSyncedPopupMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Please note you have the same vehicle not yet synced on your device");
+        builder.setTitle("Vehicle not synced");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
+
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                MainActivity.vehicleInspectionfragment = getSupportFragmentManager().findFragmentByTag("vehicle_inspection_tag");
+                if (MainActivity.vehicleInspectionfragment == null) {
+                    Globals.focusedChecklist="Vehicle Inspection";
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,new VehicleInspectionFragment(),"vehicle_inspection_tag").addToBackStack("vehicle_inspection_tag").commit();
+
+                } else {
+                    Globals.focusedChecklist="Vehicle Inspection";
+                    getSupportFragmentManager().popBackStackImmediate("vehicle_inspection_tag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, MainActivity.vehicleInspectionfragment,"vehicle_inspection_tag");
+                    transaction.commit();
+
+
+                }
+
+                // return;
+            }
+        });
+        builder.create().show();
+    }
     @Override
     public void onBackPressed() {
         //if (drawer.isDrawerOpen(GravityCompat.START)){

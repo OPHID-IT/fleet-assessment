@@ -24,6 +24,11 @@ public class Globals {
     public static int questionProgressCount=0;
     public static int denominator=0;
     public static String employeeNumber="NOT SET";
+    public static String employeeName="NOT SET";
+
+    public static int vehicleInspectionProgressCount=0;
+    public static int vehicleInspectionDenominator=32;
+    public static boolean vehicleInspectionTableHasData;
 
     //THE VARIABLES BELOW ARE FOR SIMBAS CODE
 

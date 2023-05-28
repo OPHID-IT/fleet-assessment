@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     String password, empNumber;
     Spinner spinnerCategories;
     AlertDialog.Builder builder;
+    ImageView exitAppButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
         btnlogin = findViewById(R.id.cirLoginButton);
+        exitAppButton=findViewById(R.id.exitApp);
         empnumber = findViewById(R.id.editTextEmail);
         etPassword = (EditText) findViewById(R.id.editTextPassword);
 
@@ -75,7 +78,35 @@ public class LoginActivity extends AppCompatActivity {
             dbHelper = new MySQLiteHelper(LoginActivity.this);
         }
 
+        exitAppButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this,R.style.my_dialog);
+                builder.setMessage("Are you sure you want to exit the application?");
+                builder.setTitle("Exit");
+                builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                    /* class com.ophid.coasheet.Reg.AnonymousClass6 */
+
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //Reg.this.pbar.setVisibility(View.INVISIBLE);
+                        System.exit(0);
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    /* class com.ophid.coasheet.Reg.AnonymousClass6 */
+
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //Reg.this.pbar.setVisibility(View.INVISIBLE);
+
+                    }
+                });
+                builder.create().show();
+
+
+            }
+        });
 
         btnlogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     Globals.userCredential=userCredential;
                     Globals.employeeNumber=userCredential.getEmployeeNumber();
+                    Globals.employeeName=userCredential.getEmployeeName();
                     Intent myIntent=null;
 
 
