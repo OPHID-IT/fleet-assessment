@@ -145,7 +145,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-
         btnSync.setOnClickListener(new View.OnClickListener() {
             /* class com.ophid.coasheet.Reg.AnonymousClass2 */
 
@@ -192,8 +191,6 @@ public class HomeFragment extends Fragment {
        return root;
     }
 
-
-
     private boolean haveNetworkConnection() {
         boolean haveConnectedWifi = false;
         boolean haveConnectedMobile = false;
@@ -217,7 +214,6 @@ public class HomeFragment extends Fragment {
         builder.setTitle("Not connected");
         builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
             /* class com.ophid.coasheet.Reg.AnonymousClass12 */
-
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
@@ -229,14 +225,11 @@ public class HomeFragment extends Fragment {
         builder.setTitle("Vehicle not found");
         builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
             /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
-
             public void onClick(DialogInterface dialogInterface, int i) {
             }
         });
         builder.create().show();
     }
-
-
 
     public void successPopupMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
