@@ -17,7 +17,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.InputType;
-import android.util.Base64;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,28 +27,42 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.itextpdf.text.pdf.codec.TIFFConstants;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
+import androidx.core.view.PointerIconCompat;
 import androidx.fragment.app.Fragment;
+
+import com.itextpdf.text.pdf.codec.TIFFConstants;
+
+import net.sourceforge.jtds.jdbc.DateTime;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
-public class VehicleInspectionFragment extends Fragment {
+
+public class VehicleInspectionApprovalsFragment extends Fragment {
     Boolean longPress = false;
     private MySQLiteHelper dbHelper;
+    private Connection connect;
     private SQLiteDatabase db;
     String selectedChecklist="No form selected";
     private  String recordDate;
@@ -57,12 +72,12 @@ public class VehicleInspectionFragment extends Fragment {
     ToggleButton t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26;
     String t1Value="0",t2Value="0",t3Value="0",t4Value="0",t5Value="0",t6Value="0",t7Value="0",t8Value="0",t9Value="0",t10Value="0",t11Value="0",t12Value="0",t13Value="0",t14Value="0",t15Value="0",t16Value="0",t17Value="0",t18Value="0",t19Value="0",t20Value="0",t21Value="0",t22Value="0",t23Value="0",t24Value="0",t25Value="0",t26Value="0";
     RadioButton radio_quarter, radio_half, radio_three_quarters, radio_full;
-    String currentMileageValue="", lastTyreChangeDateValue,lastBatteryChangeDateValue,mileageAtLastTyreChangeValue;
+    String employeeNumber="",currentMileageValue="", lastTyreChangeDateValue,lastBatteryChangeDateValue,mileageAtLastTyreChangeValue;
     String radioButtonValue="";
     Bitmap imgValue1,imgValue2,imgValue3,imgValue4;
 
     String recordId="";
-    Button saveButton;
+    Button approveButton,flagButton;
 
     EditText currMileageEditText,lastTyreChangeDateEditText,lastBatteryChangeDateEditText,mileageAtLastTyreChangeEditText;
 
@@ -85,7 +100,6 @@ public class VehicleInspectionFragment extends Fragment {
     private Bitmap photo;
     //public LinearLayout dynamicLayout;
     public ArrayList<Object> tollgateData;
-    public ArrayList<Object> tollgateDataStringEncoded;
     public ArrayList<Bitmap> photoArray;
     private String m_Text = "";
     Bitmap[] imagez = new Bitmap[4];
@@ -93,11 +107,9 @@ public class VehicleInspectionFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         //return inflater.inflate(R.layout.fragment_vehicle_inspection,container,false);
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_vehicle_inspection, null);
 
+        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.fragment_vehicle_inspection_approvals, null);
         tollgateData=new ArrayList<Object>();
-        tollgateDataStringEncoded=new ArrayList<Object>();
-
         photoArray = new ArrayList<>();
         currMileageEditText = (EditText) root.findViewById(R.id.current);
         lastTyreChangeDateEditText = (EditText) root.findViewById(R.id.date_tyre_last_changed);
@@ -147,19 +159,35 @@ public class VehicleInspectionFragment extends Fragment {
         t25 = (ToggleButton) root.findViewById(R.id.t25);
         t26 = (ToggleButton) root.findViewById(R.id.t26);
 
-        saveButton=(Button) root.findViewById(R.id.saveButton);
-        Globals.vehicleInspectionProgressCount=0;
-        Globals.vehicleInspectionDenominator=34;
-
-        if (Globals.vehicleInspectionTableHasData==true)
-        {
-            populateVehicleInspectionVariables();
-        }
+        approveButton=(Button) root.findViewById(R.id.approveButton);
+        flagButton=(Button) root.findViewById(R.id.approveButton);
 
         dbHelper = new MySQLiteHelper(getContext());
         db = dbHelper.getWritableDatabase();
-        
 
+
+        populateVehicleInspectionApprovalsInterface();
+
+        approveButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                try {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    ConnectionHelper connectionHelper = new ConnectionHelper();
+                    connect = connectionHelper.connectionclass();
+                    String query = "update VehicleInspections set ApprovalStatus='Approved' , VerifiedBySupNum='" +Globals.employeeNumber+"' , VerifiedBySupName='" +Globals.employeeName+"' , VerifiedDate='" +timestamp+"' where id='" +recordId+"'";
+                    Statement stm=connect.createStatement();
+                    stm.execute(query);
+                    recordApproved();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        });
 
 
         t1.setOnLongClickListener(new View.OnLongClickListener() {
@@ -346,7 +374,8 @@ public class VehicleInspectionFragment extends Fragment {
         });
 
 
-        t1.setOnClickListener(new View.OnClickListener() {
+
+    /*    t1.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -664,10 +693,10 @@ public class VehicleInspectionFragment extends Fragment {
                     Globals.vehicleInspectionProgressCount-=1;
                 }
             }
-        });
+        });*/
 
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
+       /* saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (imgValue1 == null || imgValue2 == null || imgValue3 == null || imgValue4 == null) {
@@ -691,32 +720,6 @@ public class VehicleInspectionFragment extends Fragment {
                                 }
 
                                 if (Globals.vehicleInspectionTableHasData == false) {
-
-                                    //Ranga added this to change bitmap to encoded string image
-                                    byte[] byteArray;
-                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-                                    imgValue1.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                    byteArray = stream.toByteArray();
-                                    String imgValue1StringEncoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                                    imgValue2.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                    byteArray = stream.toByteArray();
-                                    String imgValue2StringEncoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                                    imgValue3.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                    byteArray = stream.toByteArray();
-                                    String imgValue3StringEncoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-                                    imgValue4.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                                    byteArray = stream.toByteArray();
-                                    String imgValue4StringEncoded = Base64.encodeToString(byteArray, Base64.DEFAULT);
-
-
-
-                                    //Ranga added this to change bitmap to encoded string image ends here
-
-
                                     saveVehicleInspection(recordId, Globals.employeeNumber, Globals.vehicleRegNumber, t1Value,
                                             t2Value,
                                             t3Value,
@@ -753,46 +756,6 @@ public class VehicleInspectionFragment extends Fragment {
                                             getBitmapAsByteArray(imgValue3),
                                             getBitmapAsByteArray(imgValue4)
                                     );
-
-
-                                    saveVehicleInspectionStringEncodedImages(recordId, Globals.employeeNumber, Globals.vehicleRegNumber, t1Value,
-                                            t2Value,
-                                            t3Value,
-                                            t4Value,
-                                            t5Value,
-                                            t6Value,
-                                            t7Value,
-                                            t8Value,
-                                            t9Value,
-                                            t10Value,
-                                            t11Value,
-                                            t12Value,
-                                            t13Value,
-                                            t14Value,
-                                            t15Value,
-                                            t16Value,
-                                            t17Value,
-                                            t18Value,
-                                            t19Value,
-                                            t20Value,
-                                            t21Value,
-                                            t22Value,
-                                            t23Value,
-                                            t24Value,
-                                            t25Value,
-                                            t26Value,
-                                            currentMileageValue,
-                                            radioButtonValue,
-                                            lastTyreChangeDateValue,
-                                            mileageAtLastTyreChangeValue,
-                                            lastBatteryChangeDateValue,
-                                            imgValue1StringEncoded,
-                                            imgValue2StringEncoded,
-                                            imgValue3StringEncoded,
-                                            imgValue4StringEncoded
-                                    );
-
-
                                 } else if (Globals.vehicleInspectionTableHasData == true) {
                                     updateVehicleInspection(recordId, Globals.employeeNumber, Globals.vehicleRegNumber, t1Value,
                                             t2Value,
@@ -833,18 +796,12 @@ public class VehicleInspectionFragment extends Fragment {
                                 }
                 }
             }
-                });
+                });*/
 
 
 
+      /*  lastTyreChangeDateEditText.setOnClickListener(new View.OnClickListener() {
 
-
-
-
-
-
-        lastTyreChangeDateEditText.setOnClickListener(new View.OnClickListener() {
-            /* class com.ophid.coasheet.Transact.AnonymousClass2 */
 
             public void onClick(View view) {
                 Calendar instance = Calendar.getInstance();
@@ -852,7 +809,7 @@ public class VehicleInspectionFragment extends Fragment {
                 int i2 = instance.get(2);
                 int i3 = instance.get(1);
                 picker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    /* class com.ophid.coasheet.Transact.AnonymousClass2.AnonymousClass1 */
+
 
                     public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
                         //EditText editText = MainActivity.this.txtDateWorked;
@@ -864,7 +821,7 @@ public class VehicleInspectionFragment extends Fragment {
         });
 
         lastBatteryChangeDateEditText.setOnClickListener(new View.OnClickListener() {
-            /* class com.ophid.coasheet.Transact.AnonymousClass2 */
+
 
             public void onClick(View view) {
                 Calendar instance = Calendar.getInstance();
@@ -872,7 +829,7 @@ public class VehicleInspectionFragment extends Fragment {
                 int i2 = instance.get(2);
                 int i3 = instance.get(1);
                 picker = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    /* class com.ophid.coasheet.Transact.AnonymousClass2.AnonymousClass1 */
+
 
                     public void onDateSet(DatePicker datePicker, int i, int i2, int i3) {
                         //EditText editText = MainActivity.this.txtDateWorked;
@@ -888,12 +845,12 @@ public class VehicleInspectionFragment extends Fragment {
 
                 try {
                     File createTempFile = File.createTempFile("photo", ".jpg", getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-                    String unused = VehicleInspectionFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
+                    String unused = VehicleInspectionApprovalsFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
                     //HomeFragment tollgate = HomeFragment.this;
                     imageUri = FileProvider.getUriForFile(getContext(), "com.ophid.fleetassessment.fileprovider", createTempFile);
                     Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                     intent.putExtra("output", imageUri);
-                    VehicleInspectionFragment.this.startActivityForResult(intent, 123);
+                    VehicleInspectionApprovalsFragment.this.startActivityForResult(intent, 123);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -906,12 +863,12 @@ public class VehicleInspectionFragment extends Fragment {
 
                 try {
                     File createTempFile = File.createTempFile("photo", ".jpg", getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-                    String unused = VehicleInspectionFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
+                    String unused = VehicleInspectionApprovalsFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
                     //HomeFragment tollgate = HomeFragment.this;
                     imageUri = FileProvider.getUriForFile(getContext(), "com.ophid.fleetassessment.fileprovider", createTempFile);
                     Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                     intent.putExtra("output", imageUri);
-                    VehicleInspectionFragment.this.startActivityForResult(intent, 456);
+                    VehicleInspectionApprovalsFragment.this.startActivityForResult(intent, 456);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -924,12 +881,12 @@ public class VehicleInspectionFragment extends Fragment {
 
                 try {
                     File createTempFile = File.createTempFile("photo", ".jpg", getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-                    String unused = VehicleInspectionFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
+                    String unused = VehicleInspectionApprovalsFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
                     //HomeFragment tollgate = HomeFragment.this;
                     imageUri = FileProvider.getUriForFile(getContext(), "com.ophid.fleetassessment.fileprovider", createTempFile);
                     Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                     intent.putExtra("output", imageUri);
-                    VehicleInspectionFragment.this.startActivityForResult(intent, 789);
+                    VehicleInspectionApprovalsFragment.this.startActivityForResult(intent, 789);
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -942,19 +899,19 @@ public class VehicleInspectionFragment extends Fragment {
 
                 try {
                     File createTempFile = File.createTempFile("photo", ".jpg", getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
-                    String unused = VehicleInspectionFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
+                    String unused = VehicleInspectionApprovalsFragment.this.currentPhotoPath = createTempFile.getAbsolutePath();
                     //HomeFragment tollgate = HomeFragment.this;
                     imageUri = FileProvider.getUriForFile(getContext(), "com.ophid.fleetassessment.fileprovider", createTempFile);
                     Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                     intent.putExtra("output", imageUri);
-                    VehicleInspectionFragment.this.startActivityForResult(intent, 012);
+                    VehicleInspectionApprovalsFragment.this.startActivityForResult(intent, 012);
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
             }
-        });
+        });*/
 
         return root;
     }
@@ -963,15 +920,6 @@ public class VehicleInspectionFragment extends Fragment {
     public void onActivityResult(int i, int i2, Intent intent) {
         super.onActivityResult(i, i2, intent);
 
-
-
-
-      //  if (i == 123) {
-           // final ImageView imageView = new ImageView(getActivity());
-           // imageView.setLayoutParams(new LinearLayout.LayoutParams(350, 350));
-            //LinearLayout linearLayout = (LinearLayout) findViewById(R.id.llayout);
-          //  this.dynamicLayout = linearLayout;
-           // linearLayout.addView(imageView);
             Bitmap decodeFile = BitmapFactory.decodeFile(this.currentPhotoPath);
             this.photo = decodeFile;
             // photoArray.add(photo);
@@ -986,11 +934,10 @@ public class VehicleInspectionFragment extends Fragment {
             Bitmap resizeBitmap = resizeBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4);
 
 
+
+
             ArrayList<Object> tollgateset = new ArrayList<Object>();
-            ArrayList<Object> tollgatesetStringEncoded = new ArrayList<Object>();
-
-
-        Double amounts;
+            Double amounts;
             String dates;
             String vnumz,enumz,tollgateLocation,transactionNumber;
 
@@ -1001,9 +948,6 @@ public class VehicleInspectionFragment extends Fragment {
 
             tollgateset.add(resizeBitmap);
             tollgateset.add(transactionNumber);
-
-           // tollgatesetStringEncoded.add(encodedImage);
-          //  tollgatesetStringEncoded.add(transactionNumber);
 
         if(i==123) {
             imv = fv;
@@ -1032,15 +976,13 @@ public class VehicleInspectionFragment extends Fragment {
 
             //photoArray.add(resizeBitmap);
             tollgateData.add(tollgateset);
-            //tollgateDataStringEncoded.add(tollgatesetStringEncoded);
 
             imv.setImageBitmap(resizeBitmap);
             imv.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    VehicleInspectionFragment tollgate = VehicleInspectionFragment.this;
+                    VehicleInspectionApprovalsFragment tollgate = VehicleInspectionApprovalsFragment.this;
                     tollgate.editDeletePopupMessage(imv, Integer.parseInt((String)imv.getTag()));
-                     //Toast x = Toast.makeText(getActivity(),imv.getTag()+"",Toast.LENGTH_LONG);
-                    // x.show();
+
                 }
             });
        // }
@@ -1303,16 +1245,14 @@ public class VehicleInspectionFragment extends Fragment {
     }
 
 
-    @SuppressLint("Range")
+    /*@SuppressLint("Range")
     public void populateVehicleInspectionVariables()
     {
         dbHelper = new MySQLiteHelper(getActivity());
         db = dbHelper.getWritableDatabase();
 
-        //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+Globals.vehicleRegNumber+"' AND SyncStatus= '" + Globals.vehicleRegNumber +"'",null);
-        Cursor cursor = db.rawQuery("SELECT VehicleNumber,ActivityDate,SyncStatus,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage from VehicleInspection where VehicleNumber= '"+Globals.vehicleRegNumber+"' AND SyncStatus= 'Not Synced'",null);
-
-        // Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist","VehicleNumber= '"+Globals.vehicleRegNumber+"'",null);
+          //Cursor cursor = db.rawQuery("SELECT VehicleNumber,ActivityDate,SyncStatus,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage from VehicleInspection where VehicleNumber= '"+Globals.vehicleRegNumber+"' AND SyncStatus= 'Not Synced'",null);
+        Cursor cursor = db.rawQuery("SELECT VehicleNumber,ActivityDate,SyncStatus,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage from VehicleInspectionTempRemoteData where VehicleNumber= 'AGA4538'",null);
 
 
         while(cursor.moveToNext()) {
@@ -1457,6 +1397,192 @@ public class VehicleInspectionFragment extends Fragment {
             bv.setImageBitmap(imgValue4);
 
         }
+    }*/
+
+
+   // @SuppressLint("Range")
+    public void populateVehicleInspectionVariablesFromRemote(
+            String recordIdI,
+            String employeeNumberI,
+            String vehicleNumberI,
+            String activityDateI,
+            String t1I,
+            String t2I,
+            String t3I,
+            String t4I,
+            String t5I,
+            String t6I,
+            String t7I,
+            String t8I,
+            String t9I,
+            String t10I,
+            String t11I,
+            String t12I,
+            String t13I,
+            String t14I,
+            String t15I,
+            String t16I,
+            String t17I,
+            String t18I,
+            String t19I,
+            String t20I,
+            String t21I,
+            String t22I,
+            String t23I,
+            String t24I,
+            String t25I,
+            String t26I,
+            String currentMileageI,
+            String fuelI,
+            String dateTyreLastChangedI,
+            String mileageAtLastTyreChangeI,
+            String dateBatteryLastChangedI,
+            byte[] frontImageI,
+            byte[] leftImageI,
+            byte[] rightImageI,
+            byte[] backImageI
+    )
+    {
+            recordId=recordIdI;
+            employeeNumber=employeeNumberI;
+            Globals.vehicleRegNumber=vehicleNumberI;
+            recordDate=activityDateI;
+
+            setButtonStateOnDatabaseRetrieval(t1,t1I);
+            t1Value=t1I;
+
+            setButtonStateOnDatabaseRetrieval(t2,t2I);
+            t2Value=t2I;
+
+            setButtonStateOnDatabaseRetrieval(t3,t3I);
+            t3Value=t3I;
+
+            setButtonStateOnDatabaseRetrieval(t4,t4I);
+            t4Value=t4I;
+
+            setButtonStateOnDatabaseRetrieval(t5,t5I);
+            t5Value=t5I;
+
+            setButtonStateOnDatabaseRetrieval(t6,t6I);
+            t6Value=t6I;
+
+            setButtonStateOnDatabaseRetrieval(t7,t7I);
+            t7Value=t7I;
+
+            setButtonStateOnDatabaseRetrieval(t8,t8I);
+            t8Value=t8I;
+
+            setButtonStateOnDatabaseRetrieval(t9,t9I);
+            t9Value=t9I;
+
+            setButtonStateOnDatabaseRetrieval(t10,t10I);
+            t10Value=t10I;
+
+            setButtonStateOnDatabaseRetrieval(t11,t11I);
+            t11Value=t11I;
+
+            setButtonStateOnDatabaseRetrieval(t12,t12I);
+            t12Value=t12I;
+
+            setButtonStateOnDatabaseRetrieval(t13,t13I);
+            t13Value=t13I;
+
+            setButtonStateOnDatabaseRetrieval(t14,t14I);
+            t14Value=t14I;
+
+            setButtonStateOnDatabaseRetrieval(t15,t15I);
+            t15Value=t15I;
+
+            setButtonStateOnDatabaseRetrieval(t16,t16I);
+            t16Value=t16I;
+
+            setButtonStateOnDatabaseRetrieval(t17,t17I);
+            t17Value=t17I;
+
+            setButtonStateOnDatabaseRetrieval(t18,t18I);
+            t18Value=t18I;
+
+            setButtonStateOnDatabaseRetrieval(t19,t19I);
+            t19Value=t19I;
+
+            setButtonStateOnDatabaseRetrieval(t20,t20I);
+            t20Value=t20I;
+
+            setButtonStateOnDatabaseRetrieval(t21,t21I);
+            t21Value=t21I;
+
+            setButtonStateOnDatabaseRetrieval(t22,t22I);
+            t22Value=t22I;
+
+            setButtonStateOnDatabaseRetrieval(t23,t23I);
+            t23Value=t23I;
+
+            setButtonStateOnDatabaseRetrieval(t24,t24I);
+            t24Value=t24I;
+
+            setButtonStateOnDatabaseRetrieval(t25,t25I);
+            t25Value=t25I;
+
+            setButtonStateOnDatabaseRetrieval(t26,t26I);
+            t26Value=t26I;
+
+            currentMileageValue=currentMileageI;
+            currMileageEditText.setText(currentMileageValue);
+
+            lastTyreChangeDateValue=dateTyreLastChangedI;
+            lastTyreChangeDateEditText.setText(lastTyreChangeDateValue);
+
+            lastBatteryChangeDateValue=dateBatteryLastChangedI;
+            lastBatteryChangeDateEditText.setText(lastBatteryChangeDateValue);
+
+            mileageAtLastTyreChangeValue=mileageAtLastTyreChangeI;
+            mileageAtLastTyreChangeEditText.setText(mileageAtLastTyreChangeValue);
+
+            radioButtonValue=fuelI;
+
+            if(radioButtonValue.equals("quarter"))
+            {
+                radio_quarter.setChecked(true);
+            }else
+            if(radioButtonValue.equals("half"))
+            {
+                radio_half.setChecked(true);
+            }
+            else
+            if(radioButtonValue.equals("three quarters"))
+            {
+                radio_three_quarters.setChecked(true);
+            }else
+            if(radioButtonValue.equals("full"))
+            {
+                radio_full.setChecked(true);
+            }
+            byte[] bitmapdata;
+
+            // code below converts byte array in database to bitmap for display in image view
+            bitmapdata = frontImageI;
+            imgValue1 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = leftImageI;
+            imgValue2 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = rightImageI;
+            imgValue3 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = backImageI;
+            imgValue4 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            //imgValue1=cursor.getBlob(cursor.getColumnIndex("FrontImage"));
+            //imgValue2=cursor.getBlob(cursor.getColumnIndex("LeftImage"));
+            // imgValue3=cursor.getBlob(cursor.getColumnIndex("RightImage"));
+            //imgValue4=cursor.getBlob(cursor.getColumnIndex("BackImage"));
+
+            fv.setImageBitmap(imgValue1);
+            lv.setImageBitmap(imgValue2);
+            rv.setImageBitmap(imgValue3);
+            bv.setImageBitmap(imgValue4);
+
+       // }
     }
 
     public void setButtonStateOnDatabaseRetrieval(ToggleButton tb,String val)
@@ -1471,6 +1597,79 @@ public class VehicleInspectionFragment extends Fragment {
             tb.setBackground(getResources().getDrawable(R.drawable.selector_revised_comment));
             tb.setSelected(true);
         }
+    }
+
+
+    public void populateVehicleInspectionApprovalsInterface() {
+
+        try {
+
+            Connection connectionclass = new ConnectionHelper().connectionclass();
+            connect = connectionclass;
+            if (connectionclass != null) {
+                Toast.makeText(getActivity(), "connected", Toast.LENGTH_SHORT).show();
+                ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where VehicleNumber='AGA4538'");
+
+                while (rs.next())
+                {
+
+
+                    populateVehicleInspectionVariablesFromRemote(
+                            rs.getString("id"),
+                            rs.getString("EmployeeNumber"),
+                            rs.getString("VehicleNumber"),
+                            DateFormat.format("dd/MM/yyyy", rs.getDate("ActivityDate")).toString(),
+                            rs.getString("r1"),
+                            rs.getString("r2"),
+                            rs.getString("r3"),
+                            rs.getString("r4"),
+                            rs.getString("r5"),
+                            rs.getString("r6"),
+                            rs.getString("r7"),
+                            rs.getString("r8"),
+                            rs.getString("r9"),
+                            rs.getString("r10"),
+                            rs.getString("r11"),
+                            rs.getString("r12"),
+                            rs.getString("r13"),
+                            rs.getString("r14"),
+                            rs.getString("r15"),
+                            rs.getString("r16"),
+                            rs.getString("r17"),
+                            rs.getString("r18"),
+                            rs.getString("r19"),
+                            rs.getString("r20"),
+                            rs.getString("r21"),
+                            rs.getString("r22"),
+                            rs.getString("r23"),
+                            rs.getString("r24"),
+                            rs.getString("r25"),
+                            rs.getString("r26"),
+                            rs.getString("CurrentMileage"),
+                            rs.getString("Fuel"),
+                            DateFormat.format("dd/MM/yyyy", rs.getDate("DateTyreLastChanged")).toString(),
+                            rs.getString("MileageAtLastTyreChange"),
+                            DateFormat.format("dd/MM/yyyy", rs.getDate("DateBatteryLastChanged")).toString(),
+                            rs.getBytes("FrontImage"),
+                            rs.getBytes("LeftImage"),
+                            rs.getBytes("RightImage"),
+                            rs.getBytes("BackImage")
+                    );
+
+
+                }
+
+               // populateVehicleInspectionVariables();
+
+
+
+            }
+
+        }
+        catch (Exception e) {
+            Log.e("error", e.getMessage());
+        }
+
     }
 
 
@@ -1523,66 +1722,12 @@ public class VehicleInspectionFragment extends Fragment {
 
         // contentValues.put("SyncStatus", "PENDING");
 
-        db.insert("VehicleInspection",null,contentValues);
+        db.insert("VehicleInspectionTempRemoteData",null,contentValues);
         recordSavedPopupMessage();
 
     }
 
-
-    public void saveVehicleInspectionStringEncodedImages(String id, String employee_number, String vehicle_number, String t1,String t2,String t3,String t4,String t5,String t6,String t7,String t8,String t9,String t10,String t11,String t12,String t13,String t14,String t15,String t16,String t17,String t18,String t19,String t20,String t21,String t22,String t23,String t24,String t25,String t26,String currentMileageVal, String radioButtonVal,String dateTyreLastChangedVal,String mileageAtLastTyreChangeVal,String dateBatteryLastChangedVal, String fronts, String lefts, String rights, String backs) {
-
-        //Date date_stamp = new SimpleDateFormat("dd/MM/yyyy").parse(date);
-        //java.sql.Date date_stamp_sqlDate = new java.sql.Date(date_stamp.getTime());
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("id", id);
-        contentValues.put("EmployeeNumber", employee_number);
-        contentValues.put("VehicleNumber", vehicle_number);
-        contentValues.put("ActivityDate", Globals.todaysDate);
-        contentValues.put("t1", t1);
-        contentValues.put("t2", t2);
-        contentValues.put("t3", t3);
-        contentValues.put("t4", t4);
-        contentValues.put("t5", t5);
-        contentValues.put("t6", t6);
-        contentValues.put("t7", t7);
-        contentValues.put("t8", t8);
-        contentValues.put("t9", t9);
-        contentValues.put("t10", t10);
-        contentValues.put("t11", t11);
-        contentValues.put("t12", t12);
-        contentValues.put("t13", t13);
-        contentValues.put("t14", t14);
-        contentValues.put("t15", t15);
-        contentValues.put("t16", t16);
-        contentValues.put("t17", t17);
-        contentValues.put("t18", t18);
-        contentValues.put("t19", t19);
-        contentValues.put("t20", t20);
-        contentValues.put("t21", t21);
-        contentValues.put("t22", t22);
-        contentValues.put("t23", t23);
-        contentValues.put("t24", t24);
-        contentValues.put("t25", t25);
-        contentValues.put("t26", t26);
-        contentValues.put("CurrentMileage",currentMileageVal);
-        contentValues.put("Fuel",radioButtonVal);
-        contentValues.put("DateTyreLastChanged",dateTyreLastChangedVal);
-        contentValues.put("MileageAtLastTyreChange",mileageAtLastTyreChangeVal);
-        contentValues.put("DateBatteryLastChanged",dateBatteryLastChangedVal);
-        contentValues.put("FrontImage",fronts);
-        contentValues.put("LeftImage",lefts);
-        contentValues.put("RightImage",rights);
-        contentValues.put("BackImage",backs);
-
-
-        // contentValues.put("SyncStatus", "PENDING");
-
-        db.insert("VehicleInspectionStringEncodedImages",null,contentValues);
-        recordSavedPopupMessage();
-
-    }
-        public void updateVehicleInspection(String id, String employee_number,String vehicle_number, String t1,String t2,String t3,String t4,String t5,String t6,String t7,String t8,String t9,String t10,String t11,String t12,String t13,String t14,String t15,String t16,String t17,String t18,String t19,String t20,String t21,String t22,String t23,String t24,String t25,String t26, String currentMileageVal, String radioButtonVal,String dateTyreLastChangedVal,String mileageAtLastTyreChangeVal,String dateBatteryLastChangedVal, byte[] fronts, byte[] lefts, byte[] rights, byte[] backs) {
+    public void updateVehicleInspection(String id, String employee_number,String vehicle_number, String t1,String t2,String t3,String t4,String t5,String t6,String t7,String t8,String t9,String t10,String t11,String t12,String t13,String t14,String t15,String t16,String t17,String t18,String t19,String t20,String t21,String t22,String t23,String t24,String t25,String t26, String currentMileageVal, String radioButtonVal,String dateTyreLastChangedVal,String mileageAtLastTyreChangeVal,String dateBatteryLastChangedVal, byte[] fronts, byte[] lefts, byte[] rights, byte[] backs) {
 
         //Date date_stamp = new SimpleDateFormat("dd/MM/yyyy").parse(date);
         //java.sql.Date date_stamp_sqlDate = new java.sql.Date(date_stamp.getTime());
@@ -1642,7 +1787,7 @@ public class VehicleInspectionFragment extends Fragment {
             /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
 
             public void onClick(DialogInterface dialogInterface, int i) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+               // getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
 
             }
         });
@@ -1658,6 +1803,192 @@ public class VehicleInspectionFragment extends Fragment {
 
             public void onClick(DialogInterface dialogInterface, int i) {
                 //Reg.this.pbar.setVisibility(View.INVISIBLE);
+
+            }
+        });
+        builder.create().show();
+    }
+
+
+   /* @SuppressLint("Range")
+    public void populateVehicleInspectionVariablesFromRemote()
+    {
+        dbHelper = new MySQLiteHelper(getActivity());
+        db = dbHelper.getWritableDatabase();
+
+        //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+Globals.vehicleRegNumber+"' AND SyncStatus= '" + Globals.vehicleRegNumber +"'",null);
+        Cursor cursor = db.rawQuery("SELECT VehicleNumber,ActivityDate,SyncStatus,t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage from VehicleInspectionTempRemoteData where VehicleNumber= '"+Globals.vehicleRegNumber+"' AND SyncStatus= 'Not Synced'",null);
+
+        // Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist","VehicleNumber= '"+Globals.vehicleRegNumber+"'",null);
+
+
+        while(cursor.moveToNext()) {
+            //   cursor.getString(cursor.getColumnIndex("VehicleNumber")),
+            //      cursor.getString(cursor.getColumnIndex("ActivityDate")),
+            Globals.vehicleRegNumber=cursor.getString(cursor.getColumnIndex("VehicleNumber"));
+            recordDate=cursor.getString(cursor.getColumnIndex("ActivityDate"));
+            syncStatus=cursor.getString(cursor.getColumnIndex("SyncStatus"));
+
+            setButtonStateOnDatabaseRetrieval(t1,cursor.getString(cursor.getColumnIndex("t1")));
+            t1Value=cursor.getString(cursor.getColumnIndex("t1"));
+
+            setButtonStateOnDatabaseRetrieval(t2,cursor.getString(cursor.getColumnIndex("t2")));
+            t2Value=cursor.getString(cursor.getColumnIndex("t2"));
+
+            setButtonStateOnDatabaseRetrieval(t3,cursor.getString(cursor.getColumnIndex("t3")));
+            t3Value=cursor.getString(cursor.getColumnIndex("t3"));
+
+            setButtonStateOnDatabaseRetrieval(t4,cursor.getString(cursor.getColumnIndex("t4")));
+            t4Value=cursor.getString(cursor.getColumnIndex("t4"));
+
+            setButtonStateOnDatabaseRetrieval(t5,cursor.getString(cursor.getColumnIndex("t5")));
+            t5Value=cursor.getString(cursor.getColumnIndex("t5"));
+
+            setButtonStateOnDatabaseRetrieval(t6,cursor.getString(cursor.getColumnIndex("t6")));
+            t6Value=cursor.getString(cursor.getColumnIndex("t6"));
+
+            setButtonStateOnDatabaseRetrieval(t7,cursor.getString(cursor.getColumnIndex("t7")));
+            t7Value=cursor.getString(cursor.getColumnIndex("t7"));
+
+            setButtonStateOnDatabaseRetrieval(t8,cursor.getString(cursor.getColumnIndex("t8")));
+            t8Value=cursor.getString(cursor.getColumnIndex("t8"));
+
+            setButtonStateOnDatabaseRetrieval(t9,cursor.getString(cursor.getColumnIndex("t9")));
+            t9Value=cursor.getString(cursor.getColumnIndex("t9"));
+
+            setButtonStateOnDatabaseRetrieval(t10,cursor.getString(cursor.getColumnIndex("t10")));
+            t10Value=cursor.getString(cursor.getColumnIndex("t10"));
+
+            setButtonStateOnDatabaseRetrieval(t11,cursor.getString(cursor.getColumnIndex("t11")));
+            t11Value=cursor.getString(cursor.getColumnIndex("t11"));
+
+            setButtonStateOnDatabaseRetrieval(t12,cursor.getString(cursor.getColumnIndex("t12")));
+            t12Value=cursor.getString(cursor.getColumnIndex("t12"));
+
+            setButtonStateOnDatabaseRetrieval(t13,cursor.getString(cursor.getColumnIndex("t13")));
+            t13Value=cursor.getString(cursor.getColumnIndex("t13"));
+
+            setButtonStateOnDatabaseRetrieval(t14,cursor.getString(cursor.getColumnIndex("t14")));
+            t14Value=cursor.getString(cursor.getColumnIndex("t14"));
+
+            setButtonStateOnDatabaseRetrieval(t15,cursor.getString(cursor.getColumnIndex("t15")));
+            t15Value=cursor.getString(cursor.getColumnIndex("t15"));
+
+            setButtonStateOnDatabaseRetrieval(t16,cursor.getString(cursor.getColumnIndex("t16")));
+            t16Value=cursor.getString(cursor.getColumnIndex("t16"));
+
+            setButtonStateOnDatabaseRetrieval(t17,cursor.getString(cursor.getColumnIndex("t17")));
+            t17Value=cursor.getString(cursor.getColumnIndex("t17"));
+
+            setButtonStateOnDatabaseRetrieval(t18,cursor.getString(cursor.getColumnIndex("t18")));
+            t18Value=cursor.getString(cursor.getColumnIndex("t18"));
+
+            setButtonStateOnDatabaseRetrieval(t19,cursor.getString(cursor.getColumnIndex("t19")));
+            t19Value=cursor.getString(cursor.getColumnIndex("t19"));
+
+            setButtonStateOnDatabaseRetrieval(t20,cursor.getString(cursor.getColumnIndex("t20")));
+            t20Value=cursor.getString(cursor.getColumnIndex("t20"));
+
+            setButtonStateOnDatabaseRetrieval(t21,cursor.getString(cursor.getColumnIndex("t21")));
+            t21Value=cursor.getString(cursor.getColumnIndex("t21"));
+
+            setButtonStateOnDatabaseRetrieval(t22,cursor.getString(cursor.getColumnIndex("t22")));
+            t22Value=cursor.getString(cursor.getColumnIndex("t22"));
+
+            setButtonStateOnDatabaseRetrieval(t23,cursor.getString(cursor.getColumnIndex("t23")));
+            t23Value=cursor.getString(cursor.getColumnIndex("t23"));
+
+            setButtonStateOnDatabaseRetrieval(t24,cursor.getString(cursor.getColumnIndex("t24")));
+            t24Value=cursor.getString(cursor.getColumnIndex("t24"));
+
+            setButtonStateOnDatabaseRetrieval(t25,cursor.getString(cursor.getColumnIndex("t25")));
+            t25Value=cursor.getString(cursor.getColumnIndex("t25"));
+
+            setButtonStateOnDatabaseRetrieval(t26,cursor.getString(cursor.getColumnIndex("t26")));
+            t26Value=cursor.getString(cursor.getColumnIndex("t26"));
+
+            currentMileageValue=cursor.getString(cursor.getColumnIndex("CurrentMileage"));;
+            currMileageEditText.setText(currentMileageValue);
+
+            lastTyreChangeDateValue=cursor.getString(cursor.getColumnIndex("DateTyreLastChanged"));;
+            lastTyreChangeDateEditText.setText(lastTyreChangeDateValue);
+
+            lastBatteryChangeDateValue=cursor.getString(cursor.getColumnIndex("DateBatteryLastChanged"));;
+            lastBatteryChangeDateEditText.setText(lastBatteryChangeDateValue);
+
+            mileageAtLastTyreChangeValue=cursor.getString(cursor.getColumnIndex("MileageAtLastTyreChange"));;
+            mileageAtLastTyreChangeEditText.setText(mileageAtLastTyreChangeValue);
+
+            radioButtonValue=cursor.getString(cursor.getColumnIndex("Fuel"));
+
+            if(radioButtonValue.equals("quarter"))
+            {
+                radio_quarter.setChecked(true);
+            }else
+            if(radioButtonValue.equals("half"))
+            {
+                radio_half.setChecked(true);
+            }
+            else
+            if(radioButtonValue.equals("three quarters"))
+            {
+                radio_three_quarters.setChecked(true);
+            }else
+            if(radioButtonValue.equals("full"))
+            {
+                radio_full.setChecked(true);
+            }
+            byte[] bitmapdata;
+
+            // code below converts byte array in database to bitmap for display in image view
+            bitmapdata = cursor.getBlob(cursor.getColumnIndex("FrontImage"));
+            imgValue1 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = cursor.getBlob(cursor.getColumnIndex("LeftImage"));
+            imgValue2 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = cursor.getBlob(cursor.getColumnIndex("RightImage"));
+            imgValue3 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            bitmapdata = cursor.getBlob(cursor.getColumnIndex("BackImage"));
+            imgValue4 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+
+            //imgValue1=cursor.getBlob(cursor.getColumnIndex("FrontImage"));
+            //imgValue2=cursor.getBlob(cursor.getColumnIndex("LeftImage"));
+            // imgValue3=cursor.getBlob(cursor.getColumnIndex("RightImage"));
+            //imgValue4=cursor.getBlob(cursor.getColumnIndex("BackImage"));
+
+            fv.setImageBitmap(imgValue1);
+            lv.setImageBitmap(imgValue2);
+            rv.setImageBitmap(imgValue3);
+            bv.setImageBitmap(imgValue4);
+
+        }
+    }*/
+
+
+
+    public void searchNotFoundPopupMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("No vehicles pending approval found");
+        builder.setTitle("No vehicle found");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        builder.create().show();
+    }
+
+    public void recordApproved() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Record approved successfully");
+        builder.setTitle("Record Approved");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
+
+            public void onClick(DialogInterface dialogInterface, int i) {
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
 
             }
         });

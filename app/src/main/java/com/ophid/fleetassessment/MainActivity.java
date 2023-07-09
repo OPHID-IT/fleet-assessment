@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SQLiteDatabase db;
     public static Fragment vehicleChecklistfragment;
     public static Fragment vehicleInspectionfragment;
+    public static Fragment approvalsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +181,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             Globals.focusedChecklist = "Motorcycle Inspection";
                         }
                     }
+                    break;
+                case R.id.nav_approvals:
+                        //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalsFragment()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalListFragment()).commit();
+
                     break;
                 case R.id.nav_home:
                     //  getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
