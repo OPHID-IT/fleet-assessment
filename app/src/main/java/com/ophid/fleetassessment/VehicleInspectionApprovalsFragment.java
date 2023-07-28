@@ -3,6 +3,7 @@ package com.ophid.fleetassessment;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,8 +15,11 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -50,6 +54,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -75,6 +80,7 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
     String employeeNumber="",currentMileageValue="", lastTyreChangeDateValue,lastBatteryChangeDateValue,mileageAtLastTyreChangeValue;
     String radioButtonValue="";
     Bitmap imgValue1,imgValue2,imgValue3,imgValue4;
+    TextView regNumTextView;
 
     String recordId="";
     Button approveButton,flagButton;
@@ -115,6 +121,8 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
         lastTyreChangeDateEditText = (EditText) root.findViewById(R.id.date_tyre_last_changed);
         lastBatteryChangeDateEditText = (EditText) root.findViewById(R.id.date_battery_last_changed);
         mileageAtLastTyreChangeEditText = (EditText) root.findViewById(R.id.mileage_at_last_tyre_change);
+        regNumTextView=(TextView) root.findViewById(R.id.regNumTextView);
+        regNumTextView.setText("Vehicle Inspection for : " + Globals.vehicleRegNumber);
 
 
         fb=(ImageButton) root.findViewById(R.id.front_button);
@@ -160,24 +168,22 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
         t26 = (ToggleButton) root.findViewById(R.id.t26);
 
         approveButton=(Button) root.findViewById(R.id.approveButton);
-        flagButton=(Button) root.findViewById(R.id.approveButton);
+        flagButton=(Button) root.findViewById(R.id.rejectButton);
 
         dbHelper = new MySQLiteHelper(getContext());
         db = dbHelper.getWritableDatabase();
 
-
-        populateVehicleInspectionApprovalsInterface();
-
+        VehicleInspectionApprovalsFragment.AsyncTaskPopulateVehicleInspectionInterface runner = new VehicleInspectionApprovalsFragment.AsyncTaskPopulateVehicleInspectionInterface();
+        runner.execute(Globals.vehicleInspectionRecordId);
+        //populateVehicleInspectionApprovalsInterface();
         approveButton.setOnClickListener(new View.OnClickListener() {
-
             @Override
             public void onClick(View v) {
-
                 try {
                     Timestamp timestamp = new Timestamp(System.currentTimeMillis());
                     ConnectionHelper connectionHelper = new ConnectionHelper();
                     connect = connectionHelper.connectionclass();
-                    String query = "update VehicleInspections set ApprovalStatus='Approved' , VerifiedBySupNum='" +Globals.employeeNumber+"' , VerifiedBySupName='" +Globals.employeeName+"' , VerifiedDate='" +timestamp+"' where id='" +recordId+"'";
+                    String query = "update VehicleInspections set ApprovalStatus='Approved' , VerifiedBySupNum='" +Globals.employeeNumber+"' , VerifiedBySupName='" +Globals.employeeName+"' , VerifiedDate='" +timestamp+"' where id='" +Globals.vehicleInspectionRecordId+"'";
                     Statement stm=connect.createStatement();
                     stm.execute(query);
                     recordApproved();
@@ -189,6 +195,16 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
             }
         });
 
+
+        flagButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                inputDialogzRejectReason();
+
+            }
+        });
 
         t1.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -375,17 +391,13 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
 
 
 
-    /*    t1.setOnClickListener(new View.OnClickListener() {
+       t1.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                t1Value=Globals.stringBooleanToStringNumber(Boolean.toString(t1.isChecked()));
-                if(t1.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-
-                }else
+                if(!t1Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t1Value);
                 }
             }
         });
@@ -393,307 +405,228 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
         t2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t2Value=Globals.stringBooleanToStringNumber(Boolean.toString(t2.isChecked()));
-                if(t2.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-
-
-                }else
+                if(!t2Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t2Value);
                 }
             }
         });
         t3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t3Value=Globals.stringBooleanToStringNumber(Boolean.toString(t3.isChecked()));
-                if(t3.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-
-                }else
+                if(!t3Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t3Value);
                 }
             }
         });
         t4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t4Value=Globals.stringBooleanToStringNumber(Boolean.toString(t4.isChecked()));
-                if(t4.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t4Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
-
+                    rejectReason(t4Value);
                 }
             }
         });
         t5.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t5Value=Globals.stringBooleanToStringNumber(Boolean.toString(t5.isChecked()));
-                if(t5.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t5Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t5Value);
                 }
             }
         });
         t6.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t6Value=Globals.stringBooleanToStringNumber(Boolean.toString(t6.isChecked()));
-                if(t6.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t6Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t6Value);
                 }
             }
         });
         t7.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t7Value=Globals.stringBooleanToStringNumber(Boolean.toString(t7.isChecked()));
-                if(t7.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t7Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t7Value);
                 }
             }
         });
         t8.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t8Value=Globals.stringBooleanToStringNumber(Boolean.toString(t8.isChecked()));
-                if(t8.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t8Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t8Value);
                 }
             }
         });
         t9.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t9Value=Globals.stringBooleanToStringNumber(Boolean.toString(t9.isChecked()));
-                if(t9.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t9Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t9Value);
                 }
             }
         });
         t10.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t10Value=Globals.stringBooleanToStringNumber(Boolean.toString(t10.isChecked()));
-                if(t10.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t10Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t10Value);
                 }
             }
         });
         t11.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t11Value=Globals.stringBooleanToStringNumber(Boolean.toString(t11.isChecked()));
-                if(t11.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t11Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t11Value);
                 }
             }
         });
         t12.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t12Value=Globals.stringBooleanToStringNumber(Boolean.toString(t12.isChecked()));
-                if(t12.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t12Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t12Value);
                 }
             }
         });
         t13.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t13Value=Globals.stringBooleanToStringNumber(Boolean.toString(t13.isChecked()));
-                if(t13.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t13Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t13Value);
                 }
             }
         });
         t14.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t14Value=Globals.stringBooleanToStringNumber(Boolean.toString(t14.isChecked()));
-                if(t14.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t14Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t14Value);
                 }
             }
         });
         t15.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t15Value=Globals.stringBooleanToStringNumber(Boolean.toString(t15.isChecked()));
-                if(t15.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t15Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t15Value);
                 }
             }
         });
         t16.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t16Value=Globals.stringBooleanToStringNumber(Boolean.toString(t16.isChecked()));
-                if(t16.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t16Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t16Value);
                 }
             }
         });
         t17.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t17Value=Globals.stringBooleanToStringNumber(Boolean.toString(t17.isChecked()));
-                if(t17.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t17Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t17Value);
                 }
             }
         });
         t18.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t18Value=Globals.stringBooleanToStringNumber(Boolean.toString(t18.isChecked()));
-                if(t18.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t18Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t18Value);
                 }
             }
         });
         t19.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t19Value=Globals.stringBooleanToStringNumber(Boolean.toString(t19.isChecked()));
-                if(t19.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t19Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t19Value);
                 }
             }
         });
         t20.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t20Value=Globals.stringBooleanToStringNumber(Boolean.toString(t20.isChecked()));
-                if(t20.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t20Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t20Value);
                 }
             }
         });
         t21.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t21Value=Globals.stringBooleanToStringNumber(Boolean.toString(t21.isChecked()));
-                if(t21.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t21Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t21Value);
                 }
             }
         });
         t22.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t22Value=Globals.stringBooleanToStringNumber(Boolean.toString(t22.isChecked()));
-                if(t22.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t22Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t22Value);
                 }
             }
         });
         t23.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t23Value=Globals.stringBooleanToStringNumber(Boolean.toString(t23.isChecked()));
-                if(t23.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t23Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t23Value);
                 }
             }
         });
         t24.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t24Value=Globals.stringBooleanToStringNumber(Boolean.toString(t24.isChecked()));
-                if(t24.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t24Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t24Value);
                 }
             }
         });
         t25.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t25Value=Globals.stringBooleanToStringNumber(Boolean.toString(t25.isChecked()));
-                if(t25.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t25Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t25Value);
                 }
             }
         });
         t26.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                t26Value=Globals.stringBooleanToStringNumber(Boolean.toString(t26.isChecked()));
-                if(t26.isChecked()){
-                    Globals.vehicleInspectionProgressCount += 1;
-                }else
+                if(!t26Value.equals("1"))
                 {
-                    Globals.vehicleInspectionProgressCount-=1;
+                    rejectReason(t26Value);
                 }
             }
-        });*/
+        });
 
 
        /* saveButton.setOnClickListener(new View.OnClickListener() {
@@ -1001,7 +934,7 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
 
                     // bm = (Bitmap) photoArray.get(i);
 
-                    startActivity(new Intent(getActivity(), InspectionGetEnlargedImage.class));
+                    startActivity(new Intent(getActivity(), InspectionGetEnlargedImageApprovals.class));
                 } else if (i == 1) {
                     dialogInterface.cancel();
                 }
@@ -1244,7 +1177,51 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
 
     }
 
+    public void inputDialogzRejectReason() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        TextView title = new TextView(getActivity());
+        title.setText("Enter reason for flagging this record");
+        title.setTextColor(getResources().getColor(R.color.black));
+        title.setTextSize(16);
+        title.setPadding(15,0,0,0);
+        builder.setCustomTitle(title);
+        final EditText input = new EditText(getActivity());
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
 
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                m_Text = input.getText().toString();
+                    try {
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    ConnectionHelper connectionHelper = new ConnectionHelper();
+                    connect = connectionHelper.connectionclass();
+                    String query = "update VehicleInspections set ApprovalStatus='Flagged: "+m_Text+"'" +" , VerifiedBySupNum='" +Globals.employeeNumber+"' , VerifiedBySupName='" +Globals.employeeName+"' , VerifiedDate='" +timestamp+"' where id='" +Globals.vehicleInspectionRecordId+"'";
+                    Statement stm=connect.createStatement();
+                    stm.execute(query);
+                    recordApproved();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+
+         }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+        //Toast xx=Toast.makeText(this,m_Text,Toast.LENGTH_LONG);
+
+
+    }
     /*@SuppressLint("Range")
     public void populateVehicleInspectionVariables()
     {
@@ -1441,6 +1418,7 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
             byte[] leftImageI,
             byte[] rightImageI,
             byte[] backImageI
+
     )
     {
             recordId=recordIdI;
@@ -1557,31 +1535,67 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
             {
                 radio_full.setChecked(true);
             }
+
             byte[] bitmapdata;
 
             // code below converts byte array in database to bitmap for display in image view
             bitmapdata = frontImageI;
             imgValue1 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+            imagez[0]=imgValue1;
 
             bitmapdata = leftImageI;
             imgValue2 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+            imagez[1]=imgValue2;
 
             bitmapdata = rightImageI;
             imgValue3 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+            imagez[2]=imgValue3;
 
             bitmapdata = backImageI;
             imgValue4 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+            imagez[3]=imgValue4;
 
-            //imgValue1=cursor.getBlob(cursor.getColumnIndex("FrontImage"));
-            //imgValue2=cursor.getBlob(cursor.getColumnIndex("LeftImage"));
-            // imgValue3=cursor.getBlob(cursor.getColumnIndex("RightImage"));
-            //imgValue4=cursor.getBlob(cursor.getColumnIndex("BackImage"));
 
             fv.setImageBitmap(imgValue1);
             lv.setImageBitmap(imgValue2);
             rv.setImageBitmap(imgValue3);
             bv.setImageBitmap(imgValue4);
 
+        fv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                VehicleInspectionApprovalsFragment tollgate = VehicleInspectionApprovalsFragment.this;
+                editDeletePopupMessage(fv, 0);
+                //Toast x = Toast.makeText(getActivity(),imv.getTag()+"",Toast.LENGTH_LONG);
+                // x.show();
+            }
+        });
+
+        lv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                VehicleInspectionApprovalsFragment tollgate = VehicleInspectionApprovalsFragment.this;
+                editDeletePopupMessage(lv, 1);
+                //Toast x = Toast.makeText(getActivity(),imv.getTag()+"",Toast.LENGTH_LONG);
+                // x.show();
+            }
+        });
+
+        rv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                VehicleInspectionApprovalsFragment tollgate = VehicleInspectionApprovalsFragment.this;
+                editDeletePopupMessage(rv, 2);
+                //Toast x = Toast.makeText(getActivity(),imv.getTag()+"",Toast.LENGTH_LONG);
+                // x.show();
+            }
+        });
+
+        bv.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                VehicleInspectionApprovalsFragment tollgate = VehicleInspectionApprovalsFragment.this;
+                editDeletePopupMessage(bv, 3);
+                //Toast x = Toast.makeText(getActivity(),imv.getTag()+"",Toast.LENGTH_LONG);
+                // x.show();
+            }
+        });
        // }
     }
 
@@ -1590,30 +1604,30 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
         if(val.equals("0")||val.equals("1"))
         {
             tb.setChecked(Globals.integerStringToBoolean(val));
+            tb.setFocusableInTouchMode(false);
+           // tb.setEnabled(false);
         }else
         {
             tb.setTextColor(Color.WHITE);
-            tb.setBackgroundColor(Color.RED);
-            tb.setBackground(getResources().getDrawable(R.drawable.selector_revised_comment));
+           // tb.setBackgroundColor(Color.RED);
+            tb.setBackground(getResources().getDrawable(R.drawable.approvals_selector_red_always));
             tb.setSelected(true);
+
         }
     }
 
 
     public void populateVehicleInspectionApprovalsInterface() {
-
         try {
-
             Connection connectionclass = new ConnectionHelper().connectionclass();
             connect = connectionclass;
             if (connectionclass != null) {
                 Toast.makeText(getActivity(), "connected", Toast.LENGTH_SHORT).show();
-                ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where VehicleNumber='AGA4538'");
+                //ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where VehicleNumber='AGA4538'");
+                ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where id='"+Globals.vehicleInspectionRecordId+"'");
 
                 while (rs.next())
                 {
-
-
                     populateVehicleInspectionVariablesFromRemote(
                             rs.getString("id"),
                             rs.getString("EmployeeNumber"),
@@ -1650,10 +1664,11 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
                             DateFormat.format("dd/MM/yyyy", rs.getDate("DateTyreLastChanged")).toString(),
                             rs.getString("MileageAtLastTyreChange"),
                             DateFormat.format("dd/MM/yyyy", rs.getDate("DateBatteryLastChanged")).toString(),
-                            rs.getBytes("FrontImage"),
+                             rs.getBytes("FrontImage"),
                             rs.getBytes("LeftImage"),
                             rs.getBytes("RightImage"),
-                            rs.getBytes("BackImage")
+                            rs.getBytes("BackImage"
+                              )
                     );
 
 
@@ -1980,6 +1995,18 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
         builder.create().show();
     }
 
+    public void rejectReason(String tc) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage(tc);
+        builder.setTitle("No vehicle found");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+            /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        builder.create().show();
+    }
+
     public void recordApproved() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("Record approved successfully");
@@ -1988,10 +2015,145 @@ public class VehicleInspectionApprovalsFragment extends Fragment {
             /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
 
             public void onClick(DialogInterface dialogInterface, int i) {
-                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalListFragment()).commit();
 
             }
         });
         builder.create().show();
+    }
+
+    private class AsyncTaskPopulateVehicleInspectionInterface extends AsyncTask<String,String,String> {
+        ProgressDialog progressDialog;
+
+        @Override
+        protected String doInBackground(String... params) {
+            publishProgress("Retriving values..."); // Calls onProgressUpdate()
+
+            try {
+                Connection connectionclass = new ConnectionHelper().connectionclass();
+                connect = connectionclass;
+                if (connectionclass != null) {
+                   // Toast.makeText(getActivity(), "connected", Toast.LENGTH_SHORT).show();
+                    //ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where VehicleNumber='AGA4538'");
+                    //ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where id='"+Globals.vehicleInspectionRecordId+"'");
+                    ResultSet rs = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from VehicleInspections where id='"+params[0]+"'");
+
+                    if (rs.next())
+                    {
+
+                           populateVehicleInspectionVariablesFromRemote(
+                                rs.getString("id"),
+                                rs.getString("EmployeeNumber"),
+                                rs.getString("VehicleNumber"),
+                                DateFormat.format("dd/MM/yyyy", rs.getDate("ActivityDate")).toString(),
+                                rs.getString("r1"),
+                                rs.getString("r2"),
+                                rs.getString("r3"),
+                                rs.getString("r4"),
+                                rs.getString("r5"),
+                                rs.getString("r6"),
+                                rs.getString("r7"),
+                                rs.getString("r8"),
+                                rs.getString("r9"),
+                                rs.getString("r10"),
+                                rs.getString("r11"),
+                                rs.getString("r12"),
+                                rs.getString("r13"),
+                                rs.getString("r14"),
+                                rs.getString("r15"),
+                                rs.getString("r16"),
+                                rs.getString("r17"),
+                                rs.getString("r18"),
+                                rs.getString("r19"),
+                                rs.getString("r20"),
+                                rs.getString("r21"),
+                                rs.getString("r22"),
+                                rs.getString("r23"),
+                                rs.getString("r24"),
+                                rs.getString("r25"),
+                                rs.getString("r26"),
+                                rs.getString("CurrentMileage"),
+                                rs.getString("Fuel"),
+                                DateFormat.format("dd/MM/yyyy", rs.getDate("DateTyreLastChanged")).toString(),
+                                rs.getString("MileageAtLastTyreChange"),
+                                DateFormat.format("dd/MM/yyyy", rs.getDate("DateBatteryLastChanged")).toString(),
+                                   rs.getBytes("FrontImage"),
+                                   rs.getBytes("LeftImage"),
+                                   rs.getBytes("RightImage"),
+                                   rs.getBytes("BackImage")
+
+
+                        );
+
+
+
+                             /*   byte[] bitmapdata;
+
+                                // code below converts byte array in database to bitmap for display in image view
+                                try {
+                                    bitmapdata = rs.getBytes("FrontImage");
+
+                                imgValue1 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                                imagez[0] = imgValue1;
+
+                                bitmapdata = rs.getBytes("LeftImage");
+                                imgValue2 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                                imagez[1] = imgValue2;
+
+                                bitmapdata = rs.getBytes("RightImage");
+                                imgValue3 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                                imagez[2] = imgValue3;
+
+                                bitmapdata = rs.getBytes("BackImage");
+                                imgValue4 = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                                imagez[3] = imgValue4;
+
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                    fv.setImageBitmap(imgValue1);
+                                    lv.setImageBitmap(imgValue2);
+                                    rv.setImageBitmap(imgValue3);
+                                    bv.setImageBitmap(imgValue4);
+                                        }
+                                    });
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }*/
+
+
+                    }
+
+
+                }
+
+            }
+            catch (Exception e) {
+                Log.e("error", e.getMessage());
+            }
+
+            return "xxx";
+        }
+
+
+        @Override
+        protected void onPostExecute(String result) {
+            progressDialog.dismiss();
+
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(getActivity(),
+                    "ProgressDialog",
+                    "Retreiving values");
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... text) {
+
+        }
     }
 }

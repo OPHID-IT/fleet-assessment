@@ -25,7 +25,7 @@
         android:gravity="center"
         android:paddingLeft="15dp"
         android:paddingRight="15dp"
-        android:text="Vehicle Inspection"
+        android:text="Vehicle Inspection Approval"
         android:textAlignment="center"
         android:textColor="@color/black"
         android:textSize="17dp"
@@ -99,11 +99,9 @@
                 android:textOn="First Aid Kit"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector"
-
-
-                />
+                android:background="@drawable/approvals_selector_green_always"
+                android:textColor="@drawable/text_color_selector_always_white"
+           />
 
             <ToggleButton
                 android:id="@+id/t2"
@@ -114,8 +112,8 @@ android:textColor="@drawable/text_color_selector"
                 android:textOn="Fire Extinguisher"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector"
+                android:background="@drawable/approvals_selector_green_always"
+                android:textColor="@drawable/text_color_selector_always_white"
 
                 />
 
@@ -129,8 +127,8 @@ android:textColor="@drawable/text_color_selector"
                 android:textOn="Tool Box (if applicable)"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector"
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white"
                 />
 
 
@@ -143,8 +141,8 @@ android:textColor="@drawable/text_color_selector"
                 android:textOn="Spare Wheel"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector"
+                android:background="@drawable/approvals_selector_green_always"
+                android:textColor="@drawable/text_color_selector_always_white"
                 />
 
             <ToggleButton
@@ -157,8 +155,8 @@ android:textColor="@drawable/text_color_selector"
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -171,8 +169,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -201,8 +199,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -215,8 +213,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -229,8 +227,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -243,8 +241,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -257,8 +255,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -271,8 +269,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -285,8 +283,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -315,8 +313,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -329,8 +327,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -343,8 +341,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -357,8 +355,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -371,8 +369,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -384,8 +382,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Cleaniliness"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -413,8 +411,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Body Panel Condition"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -426,8 +424,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Rear view Mirror, Windscreen "
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -439,8 +437,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Windshield and window wipers"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -453,8 +451,8 @@ android:textColor="@drawable/text_color_selector" />
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-                android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+                android:textColor="@drawable/text_color_selector_always_white" />
 
 
                <ToggleButton
@@ -466,8 +464,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Side mirrors"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-                android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+                android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -479,8 +477,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Tyre condition and pressure, including spare tyre"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector" />
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white" />
 
 
             <ToggleButton
@@ -492,8 +490,8 @@ android:textColor="@drawable/text_color_selector" />
                 android:textOn="Radiator grill"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector_revised"
-android:textColor="@drawable/text_color_selector"/>
+                android:background="@drawable/approvals_selector_green_always"
+android:textColor="@drawable/text_color_selector_always_white"/>
 
             <TextView
                 android:layout_width="match_parent"

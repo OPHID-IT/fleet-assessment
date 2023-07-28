@@ -19,6 +19,7 @@ import android.database.Cursor;
 import android.database.CursorWindow;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -40,12 +41,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SQLiteDatabase db;
     public static Fragment vehicleChecklistfragment;
     public static Fragment vehicleInspectionfragment;
+    public static Fragment motorcycleChecklistfragment;
+    public static Fragment motorcycleInspectionfragment;
     public static Fragment approvalsFragment;
-
+    private static NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //Toast.makeText(this, Globals.userCredential.isSupervisor()+"", Toast.LENGTH_SHORT).show();
+        //startActivity(Intent(getApplicationContext(),SplashScreenActivity.class));
+
 
         try {
             Field field = CursorWindow.class.getDeclaredField("sCursorWindowSize");
@@ -66,22 +72,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         drawer=findViewById(R.id.drawer_layout);
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle=new ActionBarDrawerToggle(this,drawer,toolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-      //  if(savedInstanceState==null) {
-       //     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new VehicleChecklistFragment()).commit();
-       //     navigationView.setCheckedItem(R.id.nav_vehicle_checklist);
-      //  }
+        if(Globals.isSupevizor==0)
+        {
+            Menu menuNav=navigationView.getMenu();
+            MenuItem nav_item2 = menuNav.findItem(R.id.nav_approvals);
+            nav_item2.setVisible(false);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+        }
+        else if(Globals.isSupevizor==1)
+        {
+            Menu menuNav=navigationView.getMenu();
+            MenuItem nav_item2;
 
-        //  if(savedInstanceState==null) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
-        //     navigationView.setCheckedItem(R.id.nav_vehicle_checklist);
-        //  }
+            nav_item2 = menuNav.findItem(R.id.nav_home);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_vehicle_checklist);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_motorcycle_checklist);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_bicycle_inspection);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_vehicle_inspection);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_motorcycle_inspection);
+            nav_item2.setVisible(false);
+
+            nav_item2 = menuNav.findItem(R.id.nav_approvals);
+            nav_item2.setVisible(false);
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalListFragment()).commit();
+
+        }
+
+
+
+
 
     }
 
@@ -112,7 +149,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         noVehicleSelected();
 
                     }else {
-                                    Fragment motorcycleChecklistFragment = getSupportFragmentManager().findFragmentByTag("Motorcycle_checklist_tag");
+                        if (doesRegNumberExistInLocalMotorcycleChecklistTableAndIsNotSynced(Globals.vehicleRegNumber)) {
+                            motorcycleAlreadyExistsAndIsNotSyncedPopupMessage();
+                        } else {
+
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MotorcycleChecklistFragment()).commit();
+                        }
+
+                                   /*Fragment motorcycleChecklistFragment = getSupportFragmentManager().findFragmentByTag("Motorcycle_checklist_tag");
                                     if (motorcycleChecklistFragment == null) {
                                         getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new MotorcycleChecklistFragment(), "Motorcycle_checklist_tag").addToBackStack("Motorcycle_checklist_tag").commit();
                                         Globals.focusedChecklist = "Motorcycle Checklist";
@@ -122,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         transaction.replace(R.id.fragment_container, motorcycleChecklistFragment, "Motorcycle_checklist_tag");
                                         transaction.commit();
                                         Globals.focusedChecklist = "Motorcycle Checklist";
-                                    }
+                                    }*/
                     }
                     break;
                 case R.id.nav_bicycle_inspection:
@@ -230,25 +274,57 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean doesRegNumberExistInLocalTableAndIsNotSynced(String regNumber)
     {
         Globals.vehicleChecklistTableHasData=false;
-        //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
         Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
-
         if (cursor!=null && cursor.getCount()>0)
         {
             Globals.vehicleChecklistTableHasData = true;
         }
-        else if (cursor==null || cursor.getCount()==0) {
+        else if (cursor==null || cursor.getCount()==0)
+        {
             Globals.vehicleChecklistTableHasData = false;
         }
-
         return Globals.vehicleChecklistTableHasData;
     }
+
+    public boolean doesRegNumberExistInLocalMotorcycleChecklistTableAndIsNotSynced(String regNumber)
+    {
+        Globals.vehicleChecklistTableHasData=false;
+        Cursor cursor = db.rawQuery("SELECT * from MotorcycleChecklist where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+        if (cursor!=null && cursor.getCount()>0)
+        {
+            Globals.vehicleChecklistTableHasData = true;
+        }
+        else if (cursor==null || cursor.getCount()==0)
+        {
+            Globals.vehicleChecklistTableHasData = false;
+        }
+        return Globals.vehicleChecklistTableHasData;
+    }
+
 
     public boolean doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(String regNumber)
     {
         Globals.vehicleInspectionTableHasData=false;
         //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
         Cursor cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from VehicleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+
+        if (cursor!=null && cursor.getCount()>0)
+        {
+            Globals.vehicleInspectionTableHasData = true;
+        }
+        else if (cursor==null || cursor.getCount()==0) {
+            Globals.vehicleInspectionTableHasData = false;
+        }
+
+        return Globals.vehicleInspectionTableHasData;
+    }
+
+
+    public boolean doesRegNumberExistInLocalMotorcycleInspectionTableAndIsNotSynced(String regNumber)
+    {
+        Globals.vehicleInspectionTableHasData=false;
+        //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
+        Cursor cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from MotorcycleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
 
         if (cursor!=null && cursor.getCount()>0)
         {
@@ -269,7 +345,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             /* class com.ophid.coasheet.ApprovalList.AnonymousClass4 */
 
             public void onClick(DialogInterface dialogInterface, int i)
-
             {
                 MainActivity.vehicleChecklistfragment = getSupportFragmentManager().findFragmentByTag("vehicle_checklist_tag");
                 if (MainActivity.vehicleChecklistfragment == null) {
@@ -283,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     transaction.replace(R.id.fragment_container, MainActivity.vehicleChecklistfragment,"vehicle_checklist_tag");
                     transaction.commit();
 
-
                 }
 
                 // return;
@@ -292,7 +366,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.create().show();
     }
 
+    public void motorcycleAlreadyExistsAndIsNotSyncedPopupMessage() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Please note you have the same motorcycle not yet synced on your device");
+        builder.setTitle("Vehicle not synced");
+        builder.setPositiveButton("ok", new DialogInterface.OnClickListener() {
 
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                MainActivity.motorcycleChecklistfragment = getSupportFragmentManager().findFragmentByTag("motorcycle_checklist_tag");
+                if (MainActivity.motorcycleChecklistfragment == null) {
+                    Globals.focusedChecklist="Motorcycle Checklist";
+                    getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,new MotorcycleChecklistFragment(),"motorcycle_checklist_tag").addToBackStack("motorcycle_checklist_tag").commit();
+                } else {
+                    Globals.focusedChecklist="Motorcycle Checklist";
+                    getSupportFragmentManager().popBackStackImmediate("motorcycle_checklist_tag", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    transaction.replace(R.id.fragment_container, MainActivity.motorcycleChecklistfragment,"motorcycle_checklist_tag");
+                    transaction.commit();
+                }
+            }
+        });
+        builder.create().show();
+    }
     public void vehicleInspectionAlreadyExistsAndIsNotSyncedPopupMessage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Please note you have the same vehicle not yet synced on your device");
@@ -324,13 +420,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     @Override
     public void onBackPressed() {
-        //if (drawer.isDrawerOpen(GravityCompat.START)){
+       // Toast.makeText(this, getSupportFragmentManager().findFragmentById(R.id.fragment_container)+"", Toast.LENGTH_SHORT).show();
+
+        Fragment f = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if(f instanceof VehicleInspectionApprovalsFragment)
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalListFragment()).commit();
+        }
+        else if (f instanceof VehicleInspectionApprovalListFragment)
+        {
+
+        }
+        else
+        {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+        }
+
+            //if (drawer.isDrawerOpen(GravityCompat.START)){
         //    drawer.closeDrawer(GravityCompat.START);
        // }else {
-           // super.onBackPressed();
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
-                Toast.makeText(this, Globals.questionProgressCount+"", Toast.LENGTH_SHORT).show();
+       //super.onBackPressed();
 
+        //Toast.makeText(this, getSupportFragmentManager().findFragmentById(R.id.fragment_container)+"", Toast.LENGTH_SHORT).show();
+       // Toast.makeText(this, getSupportFragmentManager().findFragmentByTag("Home_tag")+"", Toast.LENGTH_SHORT).show();
+
+        //getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+       // getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new VehicleInspectionApprovalListFragment()).commit();
+        //getSupportFragmentManager().findFragmentById(R.id.fragment_approvals);
+        //getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+         // Toast.makeText(this, Globals.questionProgressCount+"", Toast.LENGTH_SHORT).show();
         //  }
     }
 
@@ -339,7 +457,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         builder.setMessage("Please select a vehicle before you proceed");
         builder.setTitle("No vehicle selected");
         builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
-            /* class com.ophid.coasheet.Reg.AnonymousClass6 */
 
             public void onClick(DialogInterface dialogInterface, int i) {
                 //Reg.this.pbar.setVisibility(View.INVISIBLE);
@@ -347,5 +464,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         builder.create().show();
+    }
+
+    public static NavigationView getNavigationView()
+    {
+        return navigationView;
     }
 }

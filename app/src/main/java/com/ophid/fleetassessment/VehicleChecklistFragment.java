@@ -33,14 +33,14 @@ import java.util.Date;
 import java.util.UUID;
 
 public class VehicleChecklistFragment extends Fragment{
-    Boolean longPress = false;
+   // Boolean longPress = false;
     private MySQLiteHelper dbHelper;
     private SQLiteDatabase db;
-    String selectedChecklist="No form selected";
+   // String selectedChecklist="No form selected";
     private String m_Text = "";
     private  String recordDate;
     private String syncStatus="Not Synced";
-    String currentLongPressValue="0";
+   // String currentLongPressValue="0";
 
    ToggleButton t1,t2,t3,t4,t5,t6,t7,t8,t9,t10,t11,t12,t13,t14,t15,t16,t17,t18,t19,t20,t21,t22,t23,t24,t25,t26,t27,t28,t29,t30,t31,t32,t33,t34;
    String t1Value="0",t2Value="0",t3Value="0",t4Value="0",t5Value="0",t6Value="0",t7Value="0",t8Value="0",t9Value="0",t10Value="0",t11Value="0",t12Value="0",t13Value="0",t14Value="0",t15Value="0",t16Value="0",t17Value="0",t18Value="0",t19Value="0",t20Value="0",t21Value="0",t22Value="0",t23Value="0",t24Value="0",t25Value="0",t26Value="0",t27Value="0",t28Value="0",t29Value="0",t30Value="0",t31Value="0",t32Value="0",t33Value="0",t34Value="0";
@@ -101,32 +101,6 @@ public class VehicleChecklistFragment extends Fragment{
         dbHelper = new MySQLiteHelper(getContext());
         db = dbHelper.getWritableDatabase();
 
-     /*   btnStartStop.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // TODO Auto-generated method stub
-                if (longPress) {
-                    longPress = false;
-                } else {
-                    longPress = true;
-                }
-                return true;
-            }
-        });
-
-        btnStartStop.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                if (!longPress) {
-                    //Do stuff
-                } else {
-                    Toast.makeText(getContext(), "Button is locked!\nLong press button to unlock it", Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        });*/
 
 
         t1.setOnLongClickListener(new View.OnLongClickListener() {

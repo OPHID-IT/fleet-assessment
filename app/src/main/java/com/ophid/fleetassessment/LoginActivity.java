@@ -38,16 +38,22 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        if(Globals.userCredential!=null) {
+         if(Globals.userCredential!=null) {
             try {
+
+
                 Intent myIntent=null;
                 if(!Globals.userCredential.isSupervisor())
                 {
+                    Globals.isSupevizor=0;
+
                     myIntent = new Intent(getApplicationContext(), MainActivity.class);
                 }
                 else
                 {
                     //navigate to the administrator*/
+
+                    Globals.isSupevizor=1;
                     myIntent = new Intent(getApplicationContext(),MainActivity.class);
                 }
 
@@ -157,6 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                     if(!userCredential.isSupervisor())
                     {
                         //sync
+                        Globals.isSupevizor=0;
                         System.out.println(userCredential.toString());
                         if(userCredential.getDriverOrRider()==1) {
 
@@ -174,6 +181,7 @@ public class LoginActivity extends AppCompatActivity {
                     else
                     {
                         //navigate to the administrator
+                        Globals.isSupevizor=1;
                         myIntent = new Intent(getApplicationContext(),MainActivity.class);
                     }
 

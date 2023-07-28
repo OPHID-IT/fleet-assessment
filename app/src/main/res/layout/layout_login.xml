@@ -20,8 +20,9 @@
 
         <TextView
             style="@style/headerTextPrimary"
+            android:layout_marginTop="@dimen/loginViewsMargin"
             android:text="Login"
-            android:layout_marginTop="@dimen/loginViewsMargin"/>
+            android:textColor="#F9B343" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputEmail"
@@ -32,9 +33,11 @@
                 android:id="@+id/editTextEmail"
                 style="@style/rangaText"
                 android:hint="Employee number"
-                android:inputType="textEmailAddress"
+                android:inputType="number"
                 android:maxLines="1"
-                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck"
+
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -73,7 +76,7 @@
             android:layout_marginTop="@dimen/loginViewsMargin"
             android:text="No account? Register with Ophid loogbook"
             android:textAlignment="center"
-            android:textColor="@color/primaryTextColor"
+            android:textColor="#F9B343"
             android:textStyle="bold"
             tools:ignore="TouchTargetSizeCheck" />
 

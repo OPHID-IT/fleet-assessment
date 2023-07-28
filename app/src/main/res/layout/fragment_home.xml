@@ -74,6 +74,7 @@
             android:layout_height="40dp"
             android:layout_marginLeft="35dp"
             android:layout_toRightOf="@id/regNumTextView"
+            android:elevation="30dp"
             android:background="@drawable/syncicon" />
     </RelativeLayout>
 

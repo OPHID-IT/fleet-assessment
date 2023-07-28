@@ -98,7 +98,8 @@
                 android:textOn="Petrol level is enough for the trip"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector"
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector"
 
                 />
 
@@ -112,7 +113,8 @@
                 android:textOn="Electricals on darsh board are funtional"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector"
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector"
             />
 
 
@@ -125,7 +127,8 @@
                 android:textOn="Adjustements on clutch, brakes levers and drive chains are within range"
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector"
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector"
                 />
 
             <ToggleButton
@@ -138,7 +141,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -151,7 +155,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
             <ToggleButton
                 android:id="@+id/t7"
@@ -163,7 +168,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -176,7 +182,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <TextView
@@ -210,7 +217,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -223,7 +231,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -236,7 +245,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -249,7 +259,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -262,7 +273,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -275,7 +287,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -288,7 +301,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -301,7 +315,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
 
@@ -316,7 +331,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -348,7 +364,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -361,7 +378,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -374,7 +392,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
             <ToggleButton
@@ -387,7 +406,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
 
 
@@ -403,7 +423,8 @@
 
                 android:textSize="12sp"
                 android:textAllCaps="false"
-                android:background="@drawable/selector" />
+                android:background="@drawable/selector_revised"
+android:textColor="@drawable/text_color_selector" />
 
             />
 
@@ -413,6 +434,7 @@
                 android:textSize="12sp"/>
 
             <Button
+                android:id="@+id/saveButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Submit"

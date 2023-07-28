@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,6 +51,9 @@ import java.util.List;
 import java.util.Locale;
 
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
+
+import com.google.android.material.navigation.NavigationView;
 
 public class HomeFragment extends Fragment {
     TextView progressIndicator;
@@ -150,6 +155,7 @@ public class HomeFragment extends Fragment {
 
             public void onClick(View view) {
                 postVehicleChecklists();
+                postMotorcycleChecklists();
                 postVehicleInspections();
                 displayUnsyncedRecords();
 
@@ -246,35 +252,58 @@ public class HomeFragment extends Fragment {
 
 
 
+    @SuppressLint("Range")
     public boolean doesRegNumberExistInLocalTableAndIsNotSynced(String regNumber)
     {
          Globals.vehicleChecklistTableHasData=false;
+        Cursor cursor=null;
         //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
-        Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+
+       cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '" + regNumber + "' AND SyncStatus= 'Not Synced'", null);
+
+       if(cursor==null || cursor.getCount()>0)
+        {
+            cursor = db.rawQuery("SELECT * from MotorcycleChecklist where VehicleNumber= '" + regNumber + "' AND SyncStatus= 'Not Synced'", null);
+        }
+
 
         if (cursor!=null && cursor.getCount()>0)
         {
             Globals.vehicleChecklistTableHasData = true;
+            Globals.vehicleCategory=cursor.getString(cursor.getColumnIndex("category"));
         }
         else if (cursor==null || cursor.getCount()==0) {
             Globals.vehicleChecklistTableHasData = false;
+            Globals.vehicleCategory="";
         }
 
         return Globals.vehicleChecklistTableHasData;
     }
 
+    @SuppressLint("Range")
     public boolean doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(String regNumber)
     {
         Globals.vehicleInspectionTableHasData=false;
         //Cursor cursor = db.rawQuery("SELECT * from VehicleChecklist where VehicleNumber= '"+regNumber+"'",null);
-        Cursor cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from VehicleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+        Cursor cursor=null;
+
+            cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from VehicleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+        if(cursor==null || cursor.getCount()>0)
+        {
+            cursor = db.rawQuery("SELECT VehicleNumber, SyncStatus from MotorcycleInspection where VehicleNumber= '"+regNumber+"' AND SyncStatus= 'Not Synced'",null);
+
+        }
+
 
         if (cursor!=null && cursor.getCount()>0)
         {
             Globals.vehicleInspectionTableHasData = true;
+            Globals.vehicleCategory=cursor.getString(cursor.getColumnIndex("category"));
+
         }
         else if (cursor==null || cursor.getCount()==0) {
             Globals.vehicleInspectionTableHasData = false;
+            Globals.vehicleCategory="";
         }
 
         return Globals.vehicleInspectionTableHasData;
@@ -286,12 +315,105 @@ public class HomeFragment extends Fragment {
         //assignDatabaseVariables(regNumber);
         if(doesRegNumberExistInLocalTableAndIsNotSynced(Globals.vehicleRegNumber))
         {
-
             regnum.setText(Globals.vehicleRegNumber);
+                            if(Globals.vehicleCategory.equals("CAR"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(true);
+                                nav_itemB.setVisible(true);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(false);
+
+                            }
+                            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(true);
+                                nav_itemD.setVisible(true);
+                                nav_itemE.setVisible(false);
+                            }
+                            else if(Globals.vehicleCategory.equals("BICYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(true);
+                            }
             successPopupMessage();
+
         } else if(doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(Globals.vehicleRegNumber))
         {
             regnum.setText(Globals.vehicleRegNumber);
+                            if(Globals.vehicleCategory.equals("CAR"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(true);
+                                nav_itemB.setVisible(true);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(false);
+
+                            }
+                            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(true);
+                                nav_itemD.setVisible(true);
+                                nav_itemE.setVisible(false);
+                            }
+                            else if(Globals.vehicleCategory.equals("BICYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(true);
+                            }
+
             successPopupMessage();
         }
         else {
@@ -315,6 +437,55 @@ public class HomeFragment extends Fragment {
 
                         while (executeQuery.next()) {
                             regnum.setText(executeQuery.getString(1));
+                            Globals.vehicleCategory=executeQuery.getString("category");
+
+                            if(Globals.vehicleCategory.equals("CAR"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(true);
+                                nav_itemB.setVisible(true);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(false);
+
+                            }
+                            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(true);
+                                nav_itemD.setVisible(true);
+                                nav_itemE.setVisible(false);
+                            }
+                            else if(Globals.vehicleCategory.equals("BICYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(true);
+                            }
+
                         }
                         return;
                     }
@@ -515,7 +686,7 @@ public class HomeFragment extends Fragment {
             ConnectionHelper connectionHelper = new ConnectionHelper();
             connect = connectionHelper.connectionclass();
             // String query = " insert into fuel_topup(top_up_code,vehicle_number,driver,speedometer_reading,top_up_reason,top_up_id,service_provider,service_provider_location,payment_method,litres,receipt_number,fuel_cost,where_are_you,top_up_date_time,receipt_image,approval_status)" + " values (?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            String query = " insert into VehicleInspections(id,EmployeeNumber,VehicleNumber,ActivityDate,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String query = " insert into VehicleInspections(id,EmployeeNumber,VehicleNumber,ActivityDate,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,r16,r17,r18,r19,r20,r21,r22,r23,r24,r25,r26,CurrentMileage,Fuel,DateTyreLastChanged,MileageAtLastTyreChange,DateBatteryLastChanged,FrontImage,LeftImage,RightImage,BackImage,ApprovalStatus)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
 
@@ -586,6 +757,8 @@ public class HomeFragment extends Fragment {
                     preparedStmt.setBytes(38, cursor.getBlob(cursor.getColumnIndex("RightImage")));
                     preparedStmt.setBytes(39, cursor.getBlob(cursor.getColumnIndex("BackImage")));
 
+                    preparedStmt.setString(40, "NOT ACTIONED");
+
                     preparedStmt.execute();
 
                     //String query = " insert into TSUSAIDHoursTab(EMP_NUM,EMP_NAM,SUP_MAIL,MONTH,YEAR,PROJ_NAM,DAY12,DAY13 ,DAY14 ,DAY15 ,DAY16 ,DAY17 ,DAY18 ,DAY19 ,DAY20 ,DAY21,DAY22 ,DAY23 ,DAY24 ,DAY25 ,DAY26 ,DAY27 ,DAY28 ,DAY29 ,DAY30 ,DAY31 ,DAY1,DAY2 ,DAY3 ,DAY4 ,DAY5 ,DAY6 ,DAY7 ,DAY8 ,DAY9 ,DAY10 ,DAY11 ,DOC_STA ,DOC_VER ,ACT_VER)" + " values (?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -606,9 +779,134 @@ public class HomeFragment extends Fragment {
 
     }
 
+    @SuppressLint("Range")
+    public void postMotorcycleChecklists()
+    {
+
+
+        Cursor cursor= getMotorcycleChecklistsPendingPosting();
+
+        while(cursor.moveToNext()) {
+
+            if (cursor.getString(cursor.getColumnIndex("t2")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t3")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t4")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t5")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t6")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t7")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t8")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t10")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t11")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t12")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t13")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t14")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t15")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t16")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t17")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t18")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t20")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t21")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t22")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t23")).equals("0")||
+                    cursor.getString(cursor.getColumnIndex("t24")).equals("0"))
+
+            {
+
+                incompleteChecklistSyncPopupMessage();
+                return;
+            }
+
+        }
+
+
+
+        cursor=getMotorcycleChecklistsPendingPosting();
+
+        try {
+            ConnectionHelper connectionHelper = new ConnectionHelper();
+            connect = connectionHelper.connectionclass();
+            // String query = " insert into fuel_topup(top_up_code,vehicle_number,driver,speedometer_reading,top_up_reason,top_up_id,service_provider,service_provider_location,payment_method,litres,receipt_number,fuel_cost,where_are_you,top_up_date_time,receipt_image,approval_status)" + " values (?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String query = " insert into MotorcycleChecklists(id,EmployeeNumber,VehicleNumber,ActivityDate,s2,s3,s4,s5,s6,s7,s8,s10,s11,s12,s13,s14,s15,s16,s17,s18,s20,s21,s22,s23,s24)" + " values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+
+
+            /*******************GET TODAYS DATE STARTS HERE*************************************************/
+            calendar = Calendar.getInstance();
+            dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            date = dateFormat.format(calendar.getTime());
+            date_stamp = new SimpleDateFormat("dd/MM/yyyy").parse(date);
+            //java.sql.Date date_stamp_sqlDate = new java.sql.Date(date_stamp.getTime());
+            /*******************GET TODAYS DATE ENDS HERE*************************************************/
+            //Date parse = new SimpleDateFormat("dd/MM/yyyy").parse(MainActivity.periodStartDate);
+
+            if (!((cursor == null) || (cursor.getCount()==0))) {
+                while(cursor.moveToNext()) {
+                    //String top_up_id = cursor.getString(cursor.getColumnIndex("top_up_id"));
+                    //JSONObject jsonObject = new JSONObject();
+                    PreparedStatement preparedStmt = connect.prepareStatement(query);
+                    preparedStmt.setString(1, cursor.getString(cursor.getColumnIndex("id")));
+                    preparedStmt.setString(2, cursor.getString(cursor.getColumnIndex("EmployeeNumber")));
+                    preparedStmt.setString(3, cursor.getString(cursor.getColumnIndex("VehicleNumber")));
+
+                    Date parse = new SimpleDateFormat("dd/MM/yyyy").parse(cursor.getString(cursor.getColumnIndex("ActivityDate")));
+                    java.sql.Date date_stamp_sqlDate = new java.sql.Date(parse.getTime());
+                    preparedStmt.setDate(4, date_stamp_sqlDate);
+
+
+                    preparedStmt.setString(5, cursor.getString(cursor.getColumnIndex("t2")));
+                    preparedStmt.setString(6, cursor.getString(cursor.getColumnIndex("t3")));
+                    preparedStmt.setString(7, cursor.getString(cursor.getColumnIndex("t4")));
+                    preparedStmt.setString(8, cursor.getString(cursor.getColumnIndex("t5")));
+                    preparedStmt.setString(9, cursor.getString(cursor.getColumnIndex("t6")));
+                    preparedStmt.setString(10, cursor.getString(cursor.getColumnIndex("t7")));
+                    preparedStmt.setString(11, cursor.getString(cursor.getColumnIndex("t8")));
+
+                    preparedStmt.setString(12, cursor.getString(cursor.getColumnIndex("t10")));
+                    preparedStmt.setBytes(13, cursor.getBlob(cursor.getColumnIndex("t11")));
+                    preparedStmt.setString(14, cursor.getString(cursor.getColumnIndex("t12")));
+                    preparedStmt.setString(15, cursor.getString(cursor.getColumnIndex("t13")));
+                    preparedStmt.setString(16, cursor.getString(cursor.getColumnIndex("t14")));
+                    preparedStmt.setString(17, cursor.getString(cursor.getColumnIndex("t15")));
+                    preparedStmt.setString(18, cursor.getString(cursor.getColumnIndex("t16")));
+                    preparedStmt.setString(19, cursor.getString(cursor.getColumnIndex("t17")));
+                    preparedStmt.setString(20, cursor.getString(cursor.getColumnIndex("t18")));
+                    preparedStmt.setString(21, cursor.getString(cursor.getColumnIndex("t20")));
+                    preparedStmt.setString(22, cursor.getString(cursor.getColumnIndex("t21")));
+                    preparedStmt.setString(23, cursor.getString(cursor.getColumnIndex("t22")));
+                    preparedStmt.setString(24, cursor.getString(cursor.getColumnIndex("t23")));
+                    preparedStmt.setString(25, cursor.getString(cursor.getColumnIndex("t24")));
+
+
+                    preparedStmt.execute();
+
+                    //String query = " insert into TSUSAIDHoursTab(EMP_NUM,EMP_NAM,SUP_MAIL,MONTH,YEAR,PROJ_NAM,DAY12,DAY13 ,DAY14 ,DAY15 ,DAY16 ,DAY17 ,DAY18 ,DAY19 ,DAY20 ,DAY21,DAY22 ,DAY23 ,DAY24 ,DAY25 ,DAY26 ,DAY27 ,DAY28 ,DAY29 ,DAY30 ,DAY31 ,DAY1,DAY2 ,DAY3 ,DAY4 ,DAY5 ,DAY6 ,DAY7 ,DAY8 ,DAY9 ,DAY10 ,DAY11 ,DOC_STA ,DOC_VER ,ACT_VER)" + " values (?, ?, ?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                }
+                updateMotorcycleChecklistStatus();
+                connect.close();
+            } else
+            {
+                noMotorcycleChecklistsPendingPosting();//ConnectionResult = "Check Connection";
+            }
+
+        } catch (Exception ex)
+        {
+            Log.e("error", ex.getMessage());
+        }
+
+
+
+    }
+
     public  Cursor getVehicleChecklistsPendingPosting() {
        // SQLiteDatabase Db = this.getWritableDatabase();
         String query = "select * from  VehicleChecklist where SyncStatus='Not Synced'";
+        Cursor cursor = db.rawQuery(query, null);
+        return cursor;
+    }
+
+    public  Cursor getMotorcycleChecklistsPendingPosting() {
+        // SQLiteDatabase Db = this.getWritableDatabase();
+        String query = "select * from  MotorcycleChecklist where SyncStatus='Not Synced'";
         Cursor cursor = db.rawQuery(query, null);
         return cursor;
     }
@@ -650,7 +948,20 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
+    public boolean updateMotorcycleChecklistStatus() {
+        try {
+            //SQLiteDatabase writableDatabase = getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("SyncStatus", "Synced");
+            db.update("MotorcycleChecklist", contentValues, "SyncStatus = 'Not Synced'", (String[]) null);
+            //writableDatabase.close();
+            successSyncPopupMessage();
+            return true;
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            return false;
+        }
+    }
     public void successSyncPopupMessage() {
         //AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.my_dialog);
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -701,7 +1012,7 @@ public class HomeFragment extends Fragment {
     public void noVehicleChecklistsPendingPosting() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.my_dialog);
         builder.setMessage("No vehicle checklists pending posting");
-        builder.setTitle("No checklists to post");
+        builder.setTitle("");
         builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
             /* class com.ophid.coasheet.Reg.AnonymousClass6 */
 
@@ -716,7 +1027,22 @@ public class HomeFragment extends Fragment {
     public void noVehicleInspectionsPendingPosting() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.my_dialog);
         builder.setMessage("No vehicle inspections pending posting");
-        builder.setTitle("No vehicle inspections to post");
+        builder.setTitle("");
+        builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
+            /* class com.ophid.coasheet.Reg.AnonymousClass6 */
+
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Reg.this.pbar.setVisibility(View.INVISIBLE);
+                ;
+            }
+        });
+        builder.create().show();
+    }
+
+    public void noMotorcycleChecklistsPendingPosting() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(),R.style.my_dialog);
+        builder.setMessage("No motorcycle checklists pending posting");
+        builder.setTitle("");
         builder.setNegativeButton("ok", new DialogInterface.OnClickListener() {
             /* class com.ophid.coasheet.Reg.AnonymousClass6 */
 
@@ -753,7 +1079,7 @@ public class HomeFragment extends Fragment {
         if(cursor!=null && cursor.getCount()!=0) {
             textview1 = new TextView(getActivity());
             textview1.setText("Vehicle Checklists");
-            textviewLayoutParams.setMargins(50, 20, 0, 0);
+            textviewLayoutParams.setMargins(50, 30, 0, 0);
             textview1.setLayoutParams(textviewLayoutParams);
             textview1.setTextColor(Color.BLACK);
             linearLayout.addView(textview1);
@@ -783,7 +1109,7 @@ public class HomeFragment extends Fragment {
        //This text view below just adds space between the different types of lists
         textview1 = new TextView(getActivity());
         textview1.setText("");
-        textviewLayoutParams.setMargins(50, 20, 0, 0);
+        textviewLayoutParams.setMargins(50, 10, 0, 0);
         textview1.setLayoutParams(textviewLayoutParams);
         textview1.setTextColor(Color.BLACK);
         linearLayout.addView(textview1);
@@ -791,7 +1117,7 @@ public class HomeFragment extends Fragment {
         if(cursor!=null && cursor.getCount()!=0) {
             textview1 = new TextView(getActivity());
             textview1.setText("Vehicle Inspections");
-            textviewLayoutParams.setMargins(50, 20, 0, 0);
+            textviewLayoutParams.setMargins(50, 0, 0, 0);
             textview1.setLayoutParams(textviewLayoutParams);
             textview1.setTextColor(Color.BLACK);
             linearLayout.addView(textview1);
@@ -802,7 +1128,7 @@ public class HomeFragment extends Fragment {
 
             textview1 = new TextView(getActivity());
             //LinearLayout.LayoutParams textviewLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-            textviewLayoutParams.setMargins(50, 20, 0, 0);
+            textviewLayoutParams.setMargins(50, 10, 0, 0);
             textview1.setLayoutParams(textviewLayoutParams);
             //textview1.setLayoutParams(new LayoutParams(LayoutParams.,LayoutParams.WRAP_CONTENT));
 
@@ -815,5 +1141,45 @@ public class HomeFragment extends Fragment {
             linearLayout.addView(textview1);
             i++;
         }
+
+
+        cursor = db.rawQuery("SELECT * from MotorcycleChecklist where SyncStatus='Not Synced'",null);
+
+        //This text view below just adds space between the different types of lists
+        textview1 = new TextView(getActivity());
+        textview1.setText("");
+        textviewLayoutParams.setMargins(50, 10, 0, 0);
+        textview1.setLayoutParams(textviewLayoutParams);
+        textview1.setTextColor(Color.BLACK);
+        linearLayout.addView(textview1);
+
+        if(cursor!=null && cursor.getCount()!=0) {
+            textview1 = new TextView(getActivity());
+            textview1.setText("Motorcycle Checklists");
+            textviewLayoutParams.setMargins(50, 0, 0, 0);
+            textview1.setLayoutParams(textviewLayoutParams);
+            textview1.setTextColor(Color.BLACK);
+            linearLayout.addView(textview1);
+        }
+
+        while(cursor.moveToNext()) {
+            @SuppressLint("Range") String regNumber = cursor.getString(cursor.getColumnIndex("VehicleNumber"));
+
+            textview1 = new TextView(getActivity());
+            //LinearLayout.LayoutParams textviewLayoutParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+            textviewLayoutParams.setMargins(50, 10, 0, 0);
+            textview1.setLayoutParams(textviewLayoutParams);
+            //textview1.setLayoutParams(new LayoutParams(LayoutParams.,LayoutParams.WRAP_CONTENT));
+
+            textview1.setText(cursor.getString(cursor.getColumnIndex("VehicleNumber")) + "   Activity date: "+ cursor.getString(cursor.getColumnIndex("ActivityDate")));
+            textview1.setTextColor(Color.BLUE);
+
+            textview1.setId(i);
+
+            //tv.add(textview1);
+            linearLayout.addView(textview1);
+            i++;
+        }
+
     }
 }

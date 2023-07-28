@@ -18,6 +18,7 @@ import java.util.Date;
 public class Globals {
 
     public static boolean vehicleChecklistTableHasData;
+   // public static boolean motorcycleChecklistTableHasData;
     public static String todaysDate;
     public static String vehicleRegNumber="No Vehicle Selected";
     public static String focusedChecklist="No form selected";
@@ -29,6 +30,10 @@ public class Globals {
     public static int vehicleInspectionProgressCount=0;
     public static int vehicleInspectionDenominator=32;
     public static boolean vehicleInspectionTableHasData;
+    public static String vehicleInspectionSyncDateTime;
+    public static String vehicleInspectionRecordId;
+    public static int isSupevizor=0;
+    public static String vehicleCategory="";
 
     //THE VARIABLES BELOW ARE FOR SIMBAS CODE
 
