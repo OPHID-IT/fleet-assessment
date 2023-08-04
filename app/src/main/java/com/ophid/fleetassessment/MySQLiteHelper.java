@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,17 +40,18 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
    // private static final String DATABASE_NAME = "/data/data/org.ophid.logbk/databases/dbPatients.db";
 
 
-    private static final String TABLE_VEHICLE_CHECKLIST = "create table VehicleChecklist(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,t27 text not null,t28 text not null,t29 text not null,t30 text not null,t31 text not null,t32 text not null,t33 text not null,t34 text not null);";
-    private static final String TABLE_MOTORCYCLE_CHECKLIST = "create table MotorcycleChecklist(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null);";
-    private static final String TABLE_VEHICLE_INSPECTION = "create table VehicleInspection(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,CurrentMileage text not null, Fuel text not null,DateTyreLastChanged text not null,MileageAtLastTyreChange text not null,DateBatteryLastChanged text not null,FrontImage BLOB, LeftImage BLOB, RightImage BLOB,BackImage BLOB);";
-    private static final String TABLE_MOTORCYCLE_INSPECTION = "create table MotorcycleInspection(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,t27 text not null,t28 text not null,t29 text not null,t30 text not null,t31 text not null,t32 text not null,t33 text not null,t34 text not null,t35 text not null,t36 text not null,CurrentMileage text not null, Fuel text not null,FrontImage BLOB, LeftImage BLOB, RightImage BLOB,BackImage BLOB);";
+    private static final String TABLE_VEHICLE_CHECKLIST = "CREATE TABLE IF NOT EXISTS VehicleChecklist(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,t27 text not null,t28 text not null,t29 text not null,t30 text not null,t31 text not null,t32 text not null,t33 text not null,t34 text not null);";
+    private static final String TABLE_MOTORCYCLE_CHECKLIST = "CREATE TABLE IF NOT EXISTS MotorcycleChecklist(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null);";
+    private static final String TABLE_VEHICLE_INSPECTION = "CREATE TABLE IF NOT EXISTS VehicleInspection(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,CurrentMileage text not null, Fuel text not null,DateTyreLastChanged text not null,MileageAtLastTyreChange text not null,DateBatteryLastChanged text not null,FrontImage BLOB, LeftImage BLOB, RightImage BLOB,BackImage BLOB);";
+    private static final String TABLE_MOTORCYCLE_INSPECTION = "CREATE TABLE IF NOT EXISTS MotorcycleInspection(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,t27 text not null,t28 text not null,t29 text not null,t30 text not null,t31 text not null,t32 text not null,t33 text not null,t34 text not null,t35 text not null,t36 text not null,CurrentMileage text not null, Fuel text not null,FrontImage BLOB, LeftImage BLOB, RightImage BLOB,BackImage BLOB);";
     private static final String TABLE_VEHICLE_INSPECTION_STRING_ENCODED_IMAGES = "create table VehicleInspectionStringEncodedImages(id text, EmployeeNumber text not null,VehicleNumber text not null,ActivityDate text not null,SyncStatus text DEFAULT 'Not Synced' not null,t1 text not null,t2 text not null,t3 text not null,t4 text not null,t5 text not null,t6 text not null,t7 text not null,t8 text not null,t9 text not null,t10 text not null,t11 text not null,t12 text not null,t13 text not null,t14 text not null,t15 text not null,t16 text not null,t17 text not null,t18 text not null,t19 text not null,t20 text not null,t21 text not null,t22 text not null,t23 text not null,t24 text not null,t25 text not null,t26 text not null,CurrentMileage text not null, Fuel text not null,DateTyreLastChanged text not null,MileageAtLastTyreChange text not null,DateBatteryLastChanged text not null,FrontImage text, LeftImage text, RightImage text,BackImage text);";
+    private static final String TABLE_OPHID_VEHICLES = "CREATE TABLE IF NOT EXISTS ophid_vehicles(license_number text primary key, category text not null);";
 
 
 
 
 
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 4;
     private static final String user_tab="user_tab";
     private static final String user_password="user_password";
     private static final String employee_number ="employee_number";
@@ -69,6 +71,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         sQLiteDatabase.execSQL(TABLE_MOTORCYCLE_CHECKLIST);
         sQLiteDatabase.execSQL(TABLE_VEHICLE_INSPECTION);
         sQLiteDatabase.execSQL(TABLE_MOTORCYCLE_INSPECTION);
+        sQLiteDatabase.execSQL(TABLE_OPHID_VEHICLES);
 
 
 
@@ -97,10 +100,24 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS TABLE_VEHICLE_CHECKLIST");
-        db.execSQL("DROP TABLE IF EXISTS TABLE_MOTORCYCLE_CHECKLIST");
-        db.execSQL("DROP TABLE IF EXISTS TABLE_VEHICLE_INSPECTION");
-        db.execSQL("DROP TABLE IF EXISTS TABLE_MOTORCYCLE_INSPECTION");
+       // db.execSQL("DROP TABLE IF EXISTS TABLE_VEHICLE_CHECKLIST");
+      //  db.execSQL("DROP TABLE IF EXISTS TABLE_MOTORCYCLE_CHECKLIST");
+      //  db.execSQL("DROP TABLE IF EXISTS TABLE_VEHICLE_INSPECTION");
+      //  db.execSQL("DROP TABLE IF EXISTS TABLE_MOTORCYCLE_INSPECTION");
+      //  db.execSQL("DROP TABLE IF EXISTS TABLE_OPHID_VEHICLES");
+
+      //  db.execSQL(TABLE_VEHICLE_CHECKLIST);
+       // db.execSQL(TABLE_MOTORCYCLE_CHECKLIST);
+      //  db.execSQL(TABLE_VEHICLE_INSPECTION);
+      //  db.execSQL(TABLE_MOTORCYCLE_INSPECTION);
+       // db.execSQL(TABLE_OPHID_VEHICLES);
+
+        db.execSQL(TABLE_VEHICLE_CHECKLIST);
+        db.execSQL(TABLE_MOTORCYCLE_CHECKLIST);
+        db.execSQL(TABLE_VEHICLE_INSPECTION);
+        db.execSQL(TABLE_MOTORCYCLE_INSPECTION);
+        db.execSQL(TABLE_OPHID_VEHICLES);
+
     }
 
 
@@ -189,17 +206,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         } catch (Exception e) {
             Log.e("error", e.getMessage());
         }
-
-
-
-
-
-
-
-
-
-
-
 
         JSONObject obj= new JSONObject();
         try {
@@ -433,5 +439,43 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         }
 
         return actualPassword;
+    }
+
+
+    public void populateLocalVehicles() {
+
+        try {
+            ConnectionHelper connectionHelper = new ConnectionHelper();
+            Connection connect = connectionHelper.connectionclass();
+            Statement st = connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet rs = null;
+
+
+            String query = "SELECT * from ophid_vehicles";
+            rs = st.executeQuery(query);
+
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues cv = new ContentValues();
+
+            while (rs.next()) {
+
+                try {
+
+                    cv.put("license_number",rs.getString("license_number"));
+                    cv.put("category",rs.getString("category"));
+                    db.insert("ophid_vehicles", null, cv);
+
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+
+           // db.close();
+
+        } catch (Exception ex) {
+            Log.e("error", ex.getMessage());
+        }
+
     }
 }

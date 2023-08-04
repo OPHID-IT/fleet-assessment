@@ -2,6 +2,7 @@ package com.ophid.fleetassessment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.PointerIconCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -9,14 +10,17 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -24,6 +28,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class LoginActivity extends AppCompatActivity {
     public Button  btnlogin, btnRegister;
@@ -33,11 +41,16 @@ public class LoginActivity extends AppCompatActivity {
     Spinner spinnerCategories;
     AlertDialog.Builder builder;
     ImageView exitAppButton;
+    private SQLiteDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //dbHelper = new MySQLiteHelper(LoginActivity.this);
+        //dbHelper.populateLocalVehicles();
+
+
          if(Globals.userCredential!=null) {
             try {
 
@@ -244,5 +257,41 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    public void populateLocalVehiclesUNUSED()
+    {
+        try {
+            Connection connect = new ConnectionHelper().connectionclass();
+            if (connect!= null) {
+                ResultSet executeQuery = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select license_number,category from ophid_vehicles");
+                if (executeQuery.next()) {
+                    executeQuery.beforeFirst();
+
+                    ContentValues contentValues = new ContentValues();
+                    String regNum;
+                    String category;
+
+                    while (executeQuery.next()) {
+                        regNum = executeQuery.getString("license_number");
+                        category = executeQuery.getString("category");
+                        contentValues.put("license_number",regNum);
+                        contentValues.put("category",category);
+                        db.insert("ophid_vehicles",  null, contentValues);
+
+                    }
+
+
+
+                }
+            }
+
+        } catch (Exception e)
+        {
+            Log.e("error", e.getMessage());
+        }
+    }
+
+
+
 }
+
 

@@ -140,10 +140,10 @@ public class HomeFragment extends Fragment {
                 return true;
             }
             public boolean onQueryTextSubmit(String str) {
-                if (!haveNetworkConnection()) {
+               /* if (!haveNetworkConnection()) {
                     noConnectionPopupMessage();
                     return true;
-                }
+                }*/
 
                 openVehicleChecklist();
                 return true;
@@ -310,7 +310,7 @@ public class HomeFragment extends Fragment {
     }
 
 
-    public void openVehicleChecklist() {
+    public void openVehicleChecklistORI() {
         Globals.vehicleRegNumber = ((searchView.getQuery().toString()).trim()).toUpperCase();
         //assignDatabaseVariables(regNumber);
         if(doesRegNumberExistInLocalTableAndIsNotSynced(Globals.vehicleRegNumber))
@@ -418,6 +418,7 @@ public class HomeFragment extends Fragment {
         }
         else {
 
+
             try {
                 Connection connectionclass = new ConnectionHelper().connectionclass();
                 connect = connectionclass;
@@ -499,7 +500,217 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    @SuppressLint("Range")
+    public void openVehicleChecklist() {
+        Globals.vehicleRegNumber = ((searchView.getQuery().toString()).trim()).toUpperCase();
+        //assignDatabaseVariables(regNumber);
+        if(doesRegNumberExistInLocalTableAndIsNotSynced(Globals.vehicleRegNumber))
+        {
+            regnum.setText(Globals.vehicleRegNumber);
+            if(Globals.vehicleCategory.equals("CAR"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
 
+                nav_itemA.setVisible(true);
+                nav_itemB.setVisible(true);
+                nav_itemC.setVisible(false);
+                nav_itemD.setVisible(false);
+                nav_itemE.setVisible(false);
+
+            }
+            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                nav_itemA.setVisible(false);
+                nav_itemB.setVisible(false);
+                nav_itemC.setVisible(true);
+                nav_itemD.setVisible(true);
+                nav_itemE.setVisible(false);
+            }
+            else if(Globals.vehicleCategory.equals("BICYCLE"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                nav_itemA.setVisible(false);
+                nav_itemB.setVisible(false);
+                nav_itemC.setVisible(false);
+                nav_itemD.setVisible(false);
+                nav_itemE.setVisible(true);
+            }
+            successPopupMessage();
+
+        } else if(doesRegNumberExistInLocalVehicleInspectionTableAndIsNotSynced(Globals.vehicleRegNumber))
+        {
+            regnum.setText(Globals.vehicleRegNumber);
+            if(Globals.vehicleCategory.equals("CAR"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                nav_itemA.setVisible(true);
+                nav_itemB.setVisible(true);
+                nav_itemC.setVisible(false);
+                nav_itemD.setVisible(false);
+                nav_itemE.setVisible(false);
+
+            }
+            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                nav_itemA.setVisible(false);
+                nav_itemB.setVisible(false);
+                nav_itemC.setVisible(true);
+                nav_itemD.setVisible(true);
+                nav_itemE.setVisible(false);
+            }
+            else if(Globals.vehicleCategory.equals("BICYCLE"))
+            {
+                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                nav_itemA.setVisible(false);
+                nav_itemB.setVisible(false);
+                nav_itemC.setVisible(false);
+                nav_itemD.setVisible(false);
+                nav_itemE.setVisible(true);
+            }
+
+            successPopupMessage();
+        }
+        else {
+
+            Cursor cursor = db.rawQuery("SELECT * from ophid_vehicles where license_number ='" + Globals.vehicleRegNumber + "'",null);
+
+
+            try {
+               // Connection connectionclass = new ConnectionHelper().connectionclass();
+              //  connect = connectionclass;
+               // if (connectionclass != null) {
+                   // ResultSet executeQuery = connect.createStatement(PointerIconCompat.TYPE_WAIT, PointerIconCompat.TYPE_CROSSHAIR).executeQuery("Select * from ophid_vehicles WHERE license_number ='" + Globals.vehicleRegNumber + "'");
+
+                    if (cursor==null || cursor.getCount()==0) {
+                        //This code below ensures that we retrieve vehicles into the vehicles table if not already there
+                        Cursor cursorb = db.rawQuery("SELECT * from ophid_vehicles",null);
+                                if (cursorb==null || cursorb.getCount()==0)
+                                {
+                                    Connection connectionclass = new ConnectionHelper().connectionclass();
+                                    connect = connectionclass;
+                                                if (connectionclass != null) {
+                                                    dbHelper.populateLocalVehicles();
+                                                    Globals.showMessage(getActivity(), "Success", "Vehicles retrieved successfully, please search for your vehicle once more");
+
+                                                }
+                                                else
+                                                {
+                                                    Globals.showMessage(getActivity(), "Populating vehicles from remote", "The system needs to upload vehicles from remote,make sure that you have internet connection and Try Again!");
+                                                    return;
+                                                }
+                                }else
+                                {
+                                    searchNotFoundPopupMessage();
+                                    return;
+                                }
+                    } else {
+                        //executeQuery.beforeFirst();
+                        successPopupMessage();
+                    }
+
+                    if (cursor!=null || cursor.getCount()>0) {
+                        //cursor.moveToFirst();
+
+                        while (cursor.moveToNext()) {
+                            regnum.setText(cursor.getString(cursor.getColumnIndex("license_number")));
+                            Globals.vehicleCategory=cursor.getString(cursor.getColumnIndex("category"));
+
+                            if(Globals.vehicleCategory.equals("CAR"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(true);
+                                nav_itemB.setVisible(true);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(false);
+
+                            }
+                            else if(Globals.vehicleCategory.equals("MOTORCYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(true);
+                                nav_itemD.setVisible(true);
+                                nav_itemE.setVisible(false);
+                            }
+                            else if(Globals.vehicleCategory.equals("BICYCLE"))
+                            {
+                                Menu menuNav = MainActivity.getNavigationView().getMenu();
+                                MenuItem nav_itemA = menuNav.findItem(R.id.nav_vehicle_checklist);
+                                MenuItem nav_itemB= menuNav.findItem(R.id.nav_vehicle_inspection);
+                                MenuItem nav_itemC= menuNav.findItem(R.id.nav_motorcycle_checklist);
+                                MenuItem nav_itemD= menuNav.findItem(R.id.nav_motorcycle_inspection);
+                                MenuItem nav_itemE= menuNav.findItem(R.id.nav_bicycle_inspection);
+
+                                nav_itemA.setVisible(false);
+                                nav_itemB.setVisible(false);
+                                nav_itemC.setVisible(false);
+                                nav_itemD.setVisible(false);
+                                nav_itemE.setVisible(true);
+                            }
+
+                        }
+                        return;
+                    }
+
+                    return;
+               // }
+
+            } catch (Exception e) {
+                Log.e("error", e.getMessage());
+            }
+        }
+    }
     @SuppressLint("Range")
     public void postVehicleChecklists()
     {

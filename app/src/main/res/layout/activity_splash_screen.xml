@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
-            android:text="1.0.2"
+            android:text="1.0.4"
             android:textColor="#32686A"
             android:textStyle="bold"
             android:textSize="20sp"/>
